@@ -3,6 +3,7 @@ import { AuthenticationService } from 'src/app/_services/authentication.service'
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 
+import { first } from 'rxjs/operators';
 import {
   AuthService,
   FacebookLoginProvider,
@@ -28,17 +29,28 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  login = () => {
-    this.authenticationService.login(this.model).subscribe(
-      (data) => {
-        this.toastr.success("Logged in successfully");
-      }, (error) => {
-        this.toastr.error(error);
-      }, () => {
-        this.router.navigate(['/members'])
-      }
-    );
-  };//end of login function
+  // login = () => {
+  //   this.authenticationService.login(this.model)
+  //   .pipe(first())
+  //       .subscribe(
+  //         data => {
+  //   //     this.toastr.success("Logged in successfully");
+
+  //           this.router.navigate(['/dashboard'])
+  //         },
+  //         error => {
+  //           this.toastr.error(error);
+  //         });
+  //   // .subscribe(
+  //   //   (data) => {
+  //   //     this.toastr.success("Logged in successfully");
+  //   //   }, (error) => {
+  //   //     this.toastr.error(error);
+  //   //   }, () => {
+  //   //     this.router.navigate(['/members'])
+  //   //   }
+  //   // );
+  // };//end of login function
 
   public signInSocial(using: String): void {
     let socialPlatformProvider = "";
@@ -56,20 +68,29 @@ export class LoginComponent implements OnInit {
       idToken: data.idToken,
       type: 'google'
     };
-    this.authenticationService.signInSocial(socialObj).subscribe(
-      (result) => {
-        if (result.error === false) {
-          this.toastr.success('Login Successfully');
-          this.authenticationService.storeData(result.data);
-        }
-        else {
-          this.toastr.error(result.message);
-        }
-      },
-      err => {
-        this.toastr.error(err);
-      }, () => {
-        this.router.navigate(['/dashboard']);
-      });
+    this.authenticationService.signInSocial(socialObj)
+    .pipe(first())
+        .subscribe(
+          data => {
+            this.router.navigate(['/dashboard'])
+          },
+          error => {
+            this.toastr.error(error);
+          });
+    // .subscribe(
+    //   (result) => {
+    //     if (result.error === false) {
+    //       this.toastr.success('Login Successfully');
+    //       this.authenticationService.storeData(result.data);
+    //     }
+    //     else {
+    //       this.toastr.error(result.message);
+    //     }
+    //   },
+    //   err => {
+    //     this.toastr.error(err);
+    //   }, () => {
+    //     this.router.navigate(['/dashboard']);
+    //   });
   }
 }

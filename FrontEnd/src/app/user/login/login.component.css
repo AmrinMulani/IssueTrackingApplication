@@ -8,6 +8,10 @@
     background-color: #3b5998;
 }
 
+body {
+    background-color: #000 !important;
+}
+
 .form-label-group {
     position: relative;
     margin-bottom: 1rem;

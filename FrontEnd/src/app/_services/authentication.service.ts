@@ -4,6 +4,9 @@ import { HttpClient, HttpParams } from '@angular/common/http'
 
 import { Observable, BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -12,29 +15,57 @@ export class AuthenticationService {
   private url = "http://localhost:3000/api/v1/users";
   userName: string;
 
-  private currentUserSubject: BehaviorSubject<any>;
-  public currentUser: Observable<any>;
+  //private currentUserSubject: BehaviorSubject<any>;
+  //public currentUser: Observable<any>;
 
-  constructor(private httpClient: HttpClient) {
+  currentData: any;
+  currentUserSubject = new BehaviorSubject<any>(JSON.parse(localStorage.getItem('userData')));
+  currentUser = this.currentUserSubject.asObservable();
+  constructor(private httpClient: HttpClient, private router: Router, private toastr: ToastrService) {
     console.log('service instance created')
-    this.currentUserSubject = new BehaviorSubject<any>(JSON.parse(localStorage.getItem('userData')));
-    this.currentUser = this.currentUserSubject.asObservable();
   }
 
   public get currentUserValue(): any {
     return this.currentUserSubject.value;
   }
-  login(data): Observable<any> {
-    const params = new HttpParams()
-      .set('email', data.email)
-      .set('password', data.password);
-    return this.httpClient.post(`${this.url}/login`, params);
+
+  changeUserData(photoUrl: string) {
+    this.currentUserSubject.next(photoUrl);
   }
-  signInSocial(data): Observable<any> {
+  // login(data): Observable<any> {
+  //   const params = new HttpParams()
+  //     .set('email', data.email)
+  //     .set('password', data.password);
+  //   return this.httpClient.post(`${this.url}/login`, params)
+  //   .pipe(map(user => {
+  //     if (user && user.data.authToken) {
+  //       console.log('user.data.authToken')
+  //       console.log(user.data.authToken)
+
+  //       // store user details and jwt token in local storage to keep user logged in between page refreshes
+  //       localStorage.setItem('currentUser', JSON.stringify(user));
+  //       this.currentUserSubject.next(user);
+  //     }
+  //     return user;
+  //   }));
+  // }
+  signInSocial(p): Observable<any> {
     var httpParams = new HttpParams()
-      .set('type', data.type)
-      .set('idToken', data.idToken);
-    return this.httpClient.post(`${this.url}/signInSocial`, httpParams);
+      .set('type', p.type)
+      .set('idToken', p.idToken);
+    return this.httpClient.post<any>(`${this.url}/signInSocial`, httpParams)
+      .pipe(map(user => {
+        if (user && user.data.authToken) {
+          console.log('user.data.authToken')
+          console.log(user.data.authToken)
+
+          // store user details and jwt token in local storage to keep user logged in between page refreshes
+          localStorage.setItem('userData', JSON.stringify(user.data));
+          this.changeUserData(user.data);
+          this.currentData = user.data;
+        }
+        return user;
+      }));
   }
 
   storeData(data) {
@@ -49,7 +80,10 @@ export class AuthenticationService {
     } return true;
   }
   logout() {
-    localStorage.removeItem('userData');
     this.currentUserSubject.next(null);
+    console.log(this.currentUserSubject.value);
+    localStorage.removeItem('userData');
+    this.toastr.info("Logged out successfully!");
+    this.router.navigate(['/login'])
   }
 }

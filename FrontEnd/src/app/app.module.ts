@@ -24,6 +24,15 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { AuthenticationService } from './_services/authentication.service';
 
 
+// Import library module
+import { NgxSpinnerModule } from 'ngx-spinner';
+import { DataTablesModule } from 'angular-datatables';
+import { IssueModule } from './issue/issue.module';
+
+
+
+import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
+
 export function getAuthServiceConfigs() {
   const config = new AuthServiceConfig(
     [
@@ -46,11 +55,11 @@ export function getAuthServiceConfigs() {
     DashboardComponent
   ],
   imports: [
-    BrowserModule,
+    BrowserModule, DataTablesModule, FroalaEditorModule.forRoot(), FroalaViewModule.forRoot(),
     FormsModule,
     AppRoutingModule,
     FormsModule,
-    SocialLoginModule,
+    SocialLoginModule, NgxSpinnerModule,
     LayoutModule,
     UserModule,
     HttpClientModule,
@@ -58,7 +67,7 @@ export function getAuthServiceConfigs() {
     BsDropdownModule.forRoot(),
     ToastrModule.forRoot({
       positionClass: 'toast-bottom-right'
-    })
+    }), IssueModule
   ],
   providers: [{
     provide: AuthServiceConfig,

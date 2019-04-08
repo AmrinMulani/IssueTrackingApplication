@@ -8,10 +8,55 @@
     border-color: #c7eacc !important;
 }
 
+.no-data-available {
+    text-align: center;
+}
+
+table>thead {
+    color: white;
+    background-color: #f75717;
+}
+
+td,
+th {
+    border: solid 1px #eee;
+}
+
+.table-striped tbody tr:nth-of-type(even) {
+    background-color: #fef0eb;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #fffefd;
+}
+
+
+/* table>thead {
+    color: white;
+    background-color: #363435;
+}
+
+td,
+th {
+    border: solid 1px #ccc;
+}
+
+.table-striped tbody tr:nth-of-type(even) {
+    background-color: #fbfcf9;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #dedede;
+} */
+
 .hover-cursor {
     cursor: pointer;
 }
 
 .taskCompleted {
     text-decoration: line-through;
+}
+
+.dataTables_empty {
+    display: none;
 }

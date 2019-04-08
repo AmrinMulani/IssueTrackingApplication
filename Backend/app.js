@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const http = require('http');
@@ -23,6 +24,8 @@ app.use(cookieParser());
 
 app.use(routeLoggerMiddleware.logIp);
 app.use(globalErrorMiddleware.globalErrorHandler);
+console.log('\n\n\n\n\n\n\n\n' + path.join(__dirname, 'uploads'));
+app.use(express.static(path.join(__dirname, 'uploads')));
 
 const modelsPath = './app/models';
 const routesPath = './app/routes';
@@ -47,13 +50,11 @@ fs.readdirSync(routesPath).forEach(function(file) {
     console.log(routesPath + '/' + file)
     if (~file.indexOf('.js')) {
         let route = require(routesPath + '/' + file);
-        console.log(route);
-
-        console.log(route.setRouter(app));
         route.setRouter(app);
     }
 });
 // end bootstrap route
+
 
 // calling global 404 handler after route
 

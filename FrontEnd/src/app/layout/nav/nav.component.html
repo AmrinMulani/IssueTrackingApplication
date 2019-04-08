@@ -1,7 +1,15 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container">
-        <a class="navbar-brand" href="#">Issue Tracking App</a>
+        <a class="navbar-brand" [routerLink]="['/dashboard']">Issue Tracking App</a>
 
+        <ul class="navbar-nav mr-auto" *ngIf="loggedIn()">
+            <li class="nav-item" routerLinkActive="active">
+                <a class="nav-link" [routerLink]="['/dashboard']">Dashboard </a>
+            </li>
+            <li class="nav-item" routerLinkActive="active">
+                <a class="nav-link" [routerLink]="['/my-list']">My List</a>
+            </li>
+        </ul>
         <ul *ngIf="!loggedIn()" class="navbar-nav pull-right">
             <li class="nav-item active">
                 <a href="#" class="nav-link">Signup</a></li>
@@ -26,3 +34,4 @@
 <div class="container">
     <ng-content></ng-content>
 </div>
+<router-outlet></router-outlet>

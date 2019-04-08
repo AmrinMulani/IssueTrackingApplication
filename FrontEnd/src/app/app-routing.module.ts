@@ -3,6 +3,9 @@ import { Routes, RouterModule } from '@angular/router';
 import { LoginComponent } from './user/login/login.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { AuthGuard } from './_guards/auth.guard';
+import { CreateComponent } from './issue/create/create.component';
+import { MyListComponent } from './issue/my-list/my-list.component';
+import { ViewComponent } from './issue/view/view.component';
 
 const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -13,6 +16,15 @@ const routes: Routes = [
     children: [
       {
         path: 'dashboard', component: DashboardComponent
+      },
+      {
+        path: 'create', component: CreateComponent
+      },
+      {
+        path: 'my-list', component: MyListComponent
+      },
+      {
+        path: 'view/:issueId', component: ViewComponent
       }
     ]
   },

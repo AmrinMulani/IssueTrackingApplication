@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 
 import { AuthenticationService } from 'src/app/_services/authentication.service';
 import { ToastrService } from 'ngx-toastr';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 
 @Component({
@@ -15,11 +15,15 @@ export class NavComponent implements OnInit {
   photoUrl: any;
 
   currentUserSubscription: Subscription;
-  constructor(private authService: AuthenticationService, private toastr: ToastrService,
+  constructor(private authService: AuthenticationService, private route: ActivatedRoute, private toastr: ToastrService,
     private router: Router) {
+    // route.params.subscribe(
+    //   () => {
+        
+    //   });
   }
   ngOnInit() {
-    this.currentUserSubscription = this.authService.currentUser.subscribe(user => {
+    this.authService.currentUser.subscribe(user => {
       console.log('user')
       console.log(user)
       this.userName = user.userDetails.name;
@@ -27,11 +31,10 @@ export class NavComponent implements OnInit {
     });
   }
   loggedIn() {
+    //return true
     return this.authService.loggedIn();
   }
   logout() {
     this.authService.logout();
-    this.toastr.info("Logged out successfully!");
-    this.router.navigate(['/login'])
   }
 }

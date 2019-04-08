@@ -2,8 +2,20 @@ const express = require('express');
 const router = express.Router();
 const userController = require("../controllers/userController");
 const appConfig = require("./../../config/appConfig");
-//const auth = require('../middlewares/auth');
 
+const multer = require('multer');
+
+var storage = multer.diskStorage({
+        destination: function(req, file, cb) {
+            cb(null, './uploads/')
+        },
+        filename: function(req, file, cb) {
+            cb(null, Date.now() + '-' + file.originalname)
+        }
+    })
+    //const auth = require('../middlewares/auth');
+
+var upload = multer({ storage: storage })
 module.exports.setRouter = (app) => {
 
     let baseUrl = `${appConfig.apiVersion}/users`;
@@ -78,6 +90,11 @@ module.exports.setRouter = (app) => {
 
     app.post(`${baseUrl}/signInSocial`, userController.loginFunction);
 
+
+    app.get(`${baseUrl}/get`, userController.getAllUsers);
+
+    app.post(`${baseUrl}/create`, upload.array('photos'), userController.createIssue);
+    app.post(`${baseUrl}/get/all`, upload.array('photos'), userController.getAllReq);
     //get all users
     //app.get(`${baseUrl}/get/all`, userController.getAllUsers);
 
