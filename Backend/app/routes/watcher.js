@@ -1,29 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const issueController = require("../controllers/issueController");
-const appConfig = require("./../../config/appConfig");
-const auth = require('./../middlewares/auth')
+const commentController = require("../controllers/commentController");
+const appConfig = require("../../config/appConfig");
+const auth = require('../middlewares/auth')
 
-
-
-const multer = require('multer');
-
-var storage = multer.diskStorage({
-        destination: function(req, file, cb) {
-            cb(null, './uploads/')
-        },
-        filename: function(req, file, cb) {
-            cb(null, Date.now() + '-' + file.originalname)
-        }
-    })
-    //const auth = require('../middlewares/auth');
-
-var upload = multer({
-    storage: storage
-});
 module.exports.setRouter = (app) => {
 
-    let baseUrl = `${appConfig.apiVersion}/issues`;
+    let baseUrl = `${appConfig.apiVersion}/watch`;
 
     // defining routes.
 
@@ -88,28 +71,14 @@ module.exports.setRouter = (app) => {
             }
         }
     */
-    // params: email, password.
-    app.post(`${baseUrl}/get/reportedBy/:assignedTo`, issueController.getIssuesReporterWise);
-    //get all users
-    app.get(`${baseUrl}/view/:issueId`, auth.isAuthorized, issueController.viewByIssueId);
 
-    // app.post(`${baseUrl}/create/:issueId/upload`, (req, res, next) => {
-    //     upload(req, res, next, function(err) {
-    //         console.log('\n\n\n\n\n\n\n\nInside upload function')
-    //         if (err) {
-    //             return res.end(err.toString());
-    //         }
-    //         res.end('Done')
-    //     })
-    // }, issueController.uploadPhoto);
+    // body params: issueId, userId.
+    app.post(`${baseUrl}`, auth.isAuthorized, commentController.addWatcher);
 
-    app.post(`${baseUrl}/create/:issueId/upload`, upload.single('photo'), auth.isAuthorized, issueController.uploadPhoto);
-    //delete photo
-    app.delete(`${baseUrl}/delete/photo`, auth.isAuthorized, issueController.deletePhoto);
+    app.get(`${baseUrl}/get/issueId/:issueId`, auth.isAuthorized, commentController.getWatchers);
 
-    app.put(`${baseUrl}/:issueId`, auth.isAuthorized, issueController.updateIssue);
-    //get notifications
-    //app.get(`${baseUrl}/get/notifications`, userController.getNotifications);
     //send friend request
     // app.post(`${baseUrl}/request/create`, userController.sendFriendRequest)
+
+
 }

@@ -1,57 +1,115 @@
 <app-nav>
-    <div class="container col-lg-12 col-md-12 col-sm-12 mt-5">
-        <div *ngIf="createForm.dirty" class="alert alert-info">
-            <strong>Information:</strong> You have made some changes. Any unsaved changes will be lost!
-        </div>
-        <form #createForm="ngForm" id="createForm" (ngSubmit)="saveData()">
-            <div class="form-group">
-                <label for="title">Title</label>
-                <input type="text" name="title" [(ngModel)]="issue.title" #title="ngModel" [ngClass]="title.valid && (title.dirty || title.touched) ? 'is-valid' : 'is-invalid'" required class="form-control" id="title" placeholder="Enter title of the issue">
+    <div class="row mb-3">
+        <div class="col-lg-5 col-md-6 col-sm-12 mt-5">
+            <div *ngIf="updateForm.dirty" class="alert alert-info">
+                <strong>Information:</strong> You have made some changes. Any unsaved changes will be lost!
             </div>
-            <div class="form-group">
-                <label for="description">Description</label>
-                <textarea rows="15" name="description" class="form-control" [froalaEditor]="options" #description="ngModel" [ngClass]="description.valid && (description.dirty || description.touched) ? 'is-valid' : 'is-invalid'" required [(ngModel)]="issue.description"
-                    id="description" placeholder="Enter description of the issue"></textarea>
-            </div>
+            <form #updateForm="ngForm" (ngSubmit)="updateInformation()">
+                <div class="form-group">
+                    <label for="title">Title</label>
+                    <input type="text" name="title" [(ngModel)]="issue.title" #title="ngModel" [ngClass]="title.valid && (title.dirty || title.touched) ? 'is-valid' : 'is-invalid'" required class="form-control" id="title" placeholder="Enter title of the issue">
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea rows="15" name="description" class="form-control" [froalaEditor]="options" #description="ngModel" [ngClass]="description.valid && (description.dirty || description.touched) ? 'is-valid' : 'is-invalid'" required [(ngModel)]="issue.description"
+                        id="description" placeholder="Enter description of the issue"></textarea>
+                </div>
 
-            <div class="form-group">
-                <label for="assignee">Assignee</label>
+                <div class="form-group">
+                    <label for="assignee">Assignee</label>
+                    <select name="assignee" [(ngModel)]="issue.assignee" required class="form-control" id="assignee">
+                            <option *ngFor="let category of allUsers" [value]="category._id"> {{category.name | uppercase}}</option>
+                        </select>
+                </div>
+                <div class="form-group">
+                    <label for="status">Status</label>
+                    <select name="status" [(ngModel)]="issue.status" required class="form-control" id="status">
+                            <option *ngFor="let s of status" [value]="s"> {{s}}</option>
+                    </select>
+                </div>
+                <!--<div class="form-group">
+                     <label for="fileUpload">Attachments</label>
+                    <input type="file" name="attachment" [(ngModel)]="issue.attachment" required multiple class="form-control-file" id="attachment"> 
+                    
+                </div>-->
 
-                <select name="assignee" [(ngModel)]="issue.assignee" required class="form-control" id="assignee">
-                <option *ngFor="let category of allUsers" [value]="category._id"> {{category.name | uppercase}}</option>
-              </select>
-            </div>
-            <div class="form-group">
-                <label for="fileUpload">Attachments</label>
-                <input type="file" name="attachment" [(ngModel)]="issue.attachment" required multiple class="form-control-file" id="attachment">
-            </div>
-
-            <div class="form-group">
-                <div class="row">
-                    <div class="col-sm-2" *ngFor="let photo of attachment">
-                        <img src="http://localhost:3000/{{photo}}" (click)="openModal(photo, template)" class="img-thumbnail p-1" alt="">
-                        <div class="text-center">
-                            <!-- <button class="btn btn-sm mr-1" (click)="setMainPhoto(photo)" [disabled]="photo.isMain" [ngClass]="photo.isMain ? 'btn-success active' : 'btn-secondary'">Main</button> -->
-                            <button class="btn btn-sm btn-danger" (click)="deletePhoto(photo)"><i class="fa fa-trash-o"></i></button>
+                <div class="col-sm-12">
+                    <div class="row">
+                        <button type="button" class="btn btn-primary btn-block" (click)="openAttachmentModal(templateAttachment)">Add more attachments</button>
+                        <div class="col-sm-3 mb-3 mt-3" *ngFor="let photo of attachment">
+                            <img src="http://localhost:3000/{{photo}}" (click)="openModal(photo, template)" class="img-thumbnail p-1" alt="">
+                            <div class="text-center">
+                                <button type="button" class="btn btn-sm btn-danger" (click)="deletePhoto(photo)"><i class="fa fa-trash-o"></i></button>
+                            </div>
                         </div>
                     </div>
                 </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary mt-2" [disabled]="!updateForm.dirty ||
+                     !updateForm.valid">Update information</button>
+                </div>
+            </form>
+        </div>
+        <div class="col-lg-4 col-md-6 col-sm-12 mt-5">
+            <div class="card">
+                <div class="card-header">
+                    <span><i class="fa fa-comment"></i> Comment Section</span>
+                </div>
+                <div class="card-body">
+                    <div *ngIf="comments.length>0">
+                        <ul #scrollMe [scrollTop]="(scrollToCommentTop)?0:scrollMe.scrollHeight" class="list-group comments">
+                            <li class="p-0 list-group-item cursorPointer text-center">
+                                <span (click)="loadEarlierComments()">Load Previous Comments</span>
+                                <br>
+                                <span *ngIf=" loadingPreviousChat==true">Loading...</span></li>
+                            <li class="p-2 list-group-item list-group-item-primary" *ngFor="let comment of comments" [ngClass]="{ 'text-right': comment.createdBy._id==currentUser.userDetails._id}">
+                                Posted By- <span class="text-capitalize"> <small>{{ comment.createdBy.name }}</small></span>
+                                <br>
+                                <strong>{{comment.description}}</strong>
+                                <br><span class="text-muted"><small> {{ comment.createdOn | date:'medium' }}</small></span>
+                            </li>
+                        </ul>
+                    </div>
+                    <br />
+                    <textarea id="txtMessageText" class="form-control" rows="3" placeholder="Press Ctrl+Enter to send" (keydown)="postUsingKeyPress($event)" [(ngModel)]="commentDescription" name="commentDescription"></textarea>
+                    <br />
+                    <input type="button" class="btn btn-sm btn-primary pull-right" (click)="postComment()" value="Post" [disabled]="commentDescription ==''" />
+                </div>
             </div>
-            <button type="submit" class="btn btn-primary" [disabled]="!createForm.dirty || !createForm.valid">Submit</button>
-        </form>
-    </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-12 mt-5">
+            <div class="card">
+                <div class="card-header">
+                    <span><i class="fa fa-eye"></i> Watcher List</span>
+                    <span class="pull-right"><button type="button" *ngIf="!isAWatcher" class="btn btn-sm btn-primary" (click)="addWatcher()">Watch</button></span>
+                </div>
+                <div class="card-body">
+                    <div *ngIf="watchers.length>0">
 
+                        <ul class="list-group watchers">
+                            <li class="p-2 list-group-item list-group-item-light" *ngFor="let watcher of watchers">
+                                <span class="text-capitalize"> {{ watcher.watcherId.name }}</span>
+                                <br><span class="text-muted"><small> {{ watcher.createdOn | date:'medium' }}</small></span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </app-nav>
 
 <ng-template #template>
-    <div class="modal-header">
-        <h4 class="modal-title pull-left"></h4>
-        <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title pull-left"></h4>
+            <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
                   <span aria-hidden="true">&times;</span>
             </button>
-    </div>
-    <div class="modal-body">
-        <img src="{{photo}}" class="img-fluid" alt="">
+        </div>
+        <div class="modal-body">
+            <img src="{{photo}}" class="img-fluid" alt="">
+        </div>
     </div>
     <!-- <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
@@ -62,6 +120,71 @@
         </div>
     </div> -->
 </ng-template>
+
+
+<ng-template #templateAttachment>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title pull-left">Add Attachments</h4>
+            <button type="button" class="close pull-right" aria-label="Close" (click)="modalAttachment.hide()">
+                      <span aria-hidden="true">&times;</span>
+                </button>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <h3>Add photos</h3>
+                    <div ng2FileDrop [ngClass]="{'nv-file-over': hasBaseDropZoneOver}" (fileOver)="fileOverBase($event)" [uploader]="uploader" class="card bg-faded p-3 text-center mb-3 my-drop-zone">
+                        <i class="fa fa-upload"></i> Drop photos here
+                    </div>
+                    Multiple
+                    <input type="file" ng2FileSelect [uploader]="uploader" multiple /><br/> Single
+                    <input type="file" ng2FileSelect [uploader]="uploader" />
+                </div>
+
+                <div class="col-md-9" style="margin-bottom: 40px" *ngIf="uploader?.queue?.length">
+
+                    <h3>Upload queue</h3>
+                    <p>Queue length: {{ uploader?.queue?.length }}</p>
+
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th width="50%">Name</th>
+                                <th>Size</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of uploader.queue">
+                                <td><strong>{{ item?.file?.name }}</strong></td>
+                                <td *ngIf="uploader.options.isHTML5" nowrap>{{ item?.file?.size/1024/1024 | number:'.2' }} MB</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div>
+                        <div>
+                            Queue progress:
+                            <div class="progress mb-4">
+                                <div class="progress-bar" role="progressbar" [ngStyle]="{ 'width': uploader.progress + '%' }"></div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-success btn-s" (click)="uploader.uploadAll()" [disabled]="!uploader.getNotUploadedItems().length">
+                                                    <span class="fa fa-upload"></span> Upload
+                                                </button>
+                        <button type="button" class="btn btn-warning btn-s" (click)="uploader.cancelAll()" [disabled]="!uploader.isUploading">
+                                                    <span class="fa fa-ban"></span> Cancel
+                                                </button>
+                        <button type="button" class="btn btn-danger btn-s" (click)="uploader.clearQueue()" [disabled]="!uploader.queue.length">
+                                                    <span class="fa fa-trash"></span> Remove
+                                                </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
 <ngx-spinner bdColor="rgba(51,51,51,0.8)" size="small" color="#e95420" type="ball-spin-clockwise-fade-rotating">
     <p style="font-size: 14px; color: #ccc">Loading...</p>
 </ngx-spinner>

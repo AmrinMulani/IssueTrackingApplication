@@ -27,6 +27,10 @@ const Issue = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'User'
     },
+    modifiedBy: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    },
     createdOn: {
         type: Date,
     },

@@ -23,11 +23,15 @@ th {
 }
 
 .table-striped tbody tr:nth-of-type(even) {
-    background-color: #fef0eb;
+    /* background-color: #fef0eb; */
+    color: #792c11;
+    background-color: #f9cfc1;
 }
 
 .table-striped tbody tr:nth-of-type(odd) {
-    background-color: #fffefd;
+    /* background-color: #fffefd; */
+    color: #797b7c;
+    background-color: #f9fafb;
 }
 
 
@@ -59,4 +63,19 @@ th {
 
 .dataTables_empty {
     display: none;
+}
+
+
+/* You can add global styles to this file, and also import other style files */
+
+
+/* Fix user-agent */
+
+* {
+    box-sizing: border-box;
+}
+
+ul {
+    list-style: none;
+    word-wrap: break-word;
 }

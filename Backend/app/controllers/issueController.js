@@ -20,6 +20,8 @@ const path = require('path');
 /* Models */
 
 const IssueModel = mongoose.model('Issue');
+const CommentModel = mongoose.model('Comment');
+
 
 
 let getIssuesReporterWise = (req, res) => {
@@ -114,7 +116,6 @@ let viewByIssueId = (req, res) => {
                         } else {
                             resolve(result);
                         }
-
                     });
             } else {
                 logger.error('Issue id is missing in the request', 'issueController: viewByIssueId => validateInput', 10);
@@ -124,6 +125,7 @@ let viewByIssueId = (req, res) => {
         });
     }; //end of validateInput
 
+    //.then(fetchComments)
     validateInput(req, res)
         .then((resolve) => {
             let apiResponse = response.generate(false, 'Data Found', 200, resolve);
@@ -206,8 +208,144 @@ let deletePhoto = (req, res) => {
             res.send(err)
         });
 }; //end of deletePhoto
+
+//uploadPhotoFunction
+let uploadPhotoFunction = (req, res) => {
+    console.log('req.body')
+    console.log(req.body)
+    console.log('req.file')
+    console.log(req.file)
+
+    let validateParameters = () => {
+        return new Promise((resolve, reject) => {
+            if (check.isEmpty(req.params.issueId)) {
+                logger.error('Issue id is missing in the request', 'issueController : uploadPhotoFunction=> validateParameters', 10);
+                let apiResponse = response.generate(true, 'Issue id is missing in the request', 400, null);
+                reject(apiResponse);
+            } else {
+                resolve();
+            }
+        });
+    }; //end of validateParameters
+
+    let findAndUploadPhoto = () => {
+        return new Promise((resolve, reject) => {
+            IssueModel.findOne({ 'issueId': req.params.issueId })
+                .exec((err, result) => {
+                    if (err) {
+                        logger.error(err, 'issueController : uploadPhotoFunction=> findAndUploadPhoto', 10);
+                        let apiResponse = response.generate(true, err, 500, null);
+                        reject(apiResponse);
+                    } else if (check.isEmpty(result)) {
+                        logger.error('No record found for the id', 'issueController : uploadPhotoFunction=> findAndUploadPhoto', 10);
+                        let apiResponse = response.generate(true, 'No record found for the id', 204, null);
+                        reject(apiResponse);
+                    } else {
+
+                        result.attachment.push(req.file.filename)
+                        result.markModified('attachment');
+                        result.save((err, newData) => {
+                            if (err) {
+                                //console.log(err)
+                                logger.error(err.message, 'issueController: uploadPhotoFunction => findAndUploadPhoto', 10);
+                                let apiResponse = response.generate(true, 'Unable to delete photo', 400, null);
+                                reject(apiResponse);
+                            } else {
+                                let newDataObject = newData.toObject();
+                                resolve(newDataObject);
+                            }
+                        });
+                    };
+                });
+        });
+    }; //end of findAndUploadPhoto
+    validateParameters()
+        .then(findAndUploadPhoto)
+        .then((resolve) => {
+            let apiResponse = response.generate(false, 'Attachment uploaded successfully', 200, resolve)
+            res.status(200)
+            res.send(apiResponse)
+        }).catch((err) => {
+            let dirName = path.join(__dirname, '../../uploads')
+            var filePath = `${dirName}/${req.file.filename}`;
+            fs.unlinkSync(filePath);
+            res.status(err.status)
+            res.send(err)
+        });
+    //res.send('Done');
+}; //end of uploadPhotoFunction
+
+//update issue using issue id
+let updateIssueFunction = (req, res) => {
+
+    let validateParameters = () => {
+        return new Promise((resolve, reject) => {
+            if (check.isEmpty(req.params.issueId)) {
+                logger.error('Issue id is missing in the request', 'issueController : updateIssueFunction=> validateParameters', 10);
+                let apiResponse = response.generate(true, 'Issue id is missing in the request', 400, null);
+                reject(apiResponse);
+            } else if (check.isEmpty(req.body.title)) {
+                logger.error('Title is missing in the request', 'issueController : updateIssueFunction=> validateParameters', 10);
+                let apiResponse = response.generate(true, 'Title is missing in the request', 400, null);
+                reject(apiResponse);
+            } else if (check.isEmpty(req.body.description)) {
+                logger.error('Issue id is missing in the request', 'issueController : updateIssueFunction=> validateParameters', 10);
+                let apiResponse = response.generate(true, 'Title is missing in the request', 400, null);
+                reject(apiResponse);
+            } else {
+                resolve();
+            }
+        });
+    }; //end of validateParameters
+
+    let findAndUpdate = () => {
+        return new Promise((resolve, reject) => {
+            IssueModel.findOne({ 'issueId': req.params.issueId })
+                .exec((err, result) => {
+                    if (err) {
+                        logger.error(err, 'issueController : updateIssueFunction=> findAndUpdate', 10);
+                        let apiResponse = response.generate(true, err, 500, null);
+                        reject(apiResponse);
+                    } else if (check.isEmpty(result)) {
+                        logger.error('No record found for the id', 'issueController : updateIssueFunction=> findAndUpdate', 10);
+                        let apiResponse = response.generate(true, 'No record found for the id', 204, null);
+                        reject(apiResponse);
+                    } else {
+                        result.title = req.body.title.trim();
+                        result.description = req.body.description.trim();
+                        result.assignedTo = req.body.assignedTo;
+                        result.status = req.body.status;
+                        result.modifiedBy = req.body.modifiedBy
+                        result.save((err, newData) => {
+                            if (err) {
+                                //console.log(err)
+                                logger.error(err.message, 'issueController: updateIssueFunction => findAndUpdate', 10);
+                                let apiResponse = response.generate(true, 'Unable to update data', 400, null);
+                                reject(apiResponse);
+                            } else {
+                                let newDataObject = newData.toObject();
+                                resolve(newDataObject);
+                            }
+                        });
+                    };
+                });
+        });
+    }; //end of findAndUpdate
+    validateParameters()
+        .then(findAndUpdate)
+        .then((resolve) => {
+            let apiResponse = response.generate(false, 'updated successfully', 200, resolve)
+            res.status(200)
+            res.send(apiResponse)
+        }).catch((err) => {
+            res.status(err.status)
+            res.send(err)
+        });;
+}; //end of updateIssueFunction
 module.exports = {
     getIssuesReporterWise: getIssuesReporterWise,
     viewByIssueId: viewByIssueId,
-    deletePhoto: deletePhoto
+    deletePhoto: deletePhoto,
+    uploadPhoto: uploadPhotoFunction,
+    updateIssue: updateIssueFunction
 }

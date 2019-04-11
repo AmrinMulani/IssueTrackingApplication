@@ -4,4 +4,5 @@ export interface CreateIssue {
     description: string;
     assignee: string;
     attachment: string;
+    status?:string;
 }

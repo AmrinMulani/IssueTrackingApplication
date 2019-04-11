@@ -22,4 +22,5 @@ export class UserService {
     // console.log(data);
     return this.http.post(`${this.url}/create`, data)
   };
+
 }

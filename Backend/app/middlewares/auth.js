@@ -10,6 +10,8 @@ const check = require('../libs/checkLib');
 let isAuthorized = (req, res, next) => {
     if (req.params.authToken || req.query.authToken || req.body.authToken || req.header('authToken')) {
         AuthModel.findOne({ authToken: req.params.authToken || req.query.authToken || req.body.authToken || req.header('authToken') }, (err, authDetails) => {
+            console.log('\n\n\n\n\n\n\n\n\nreq.query.authToken')
+            console.log(req.query.authToken)
             if (err) {
                 console.log(err)
                 logger.error(err.message, 'Authorization Middleware', 10);

@@ -11,9 +11,10 @@ import { DataTablesModule } from 'angular-datatables';
 import { ViewComponent } from './view/view.component';
 
 import { ModalModule } from 'ngx-bootstrap';
+import { FileUploadModule } from 'ng2-file-upload';
 @NgModule({
   declarations: [CreateComponent, MyListComponent, ViewComponent],
-  imports: [ LayoutModule,DataTablesModule, ModalModule.forRoot(),
+  imports: [ LayoutModule,DataTablesModule, ModalModule.forRoot(), FileUploadModule,
     CommonModule, FormsModule, FroalaEditorModule.forRoot(), FroalaViewModule.forRoot(),NgxSpinnerModule
   ]
 })

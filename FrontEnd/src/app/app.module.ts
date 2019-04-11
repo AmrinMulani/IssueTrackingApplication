@@ -30,9 +30,11 @@ import { DataTablesModule } from 'angular-datatables';
 import { IssueModule } from './issue/issue.module';
 
 
-
+//for rich text editor
 import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
 
+//for file upload
+import { FileUploadModule } from 'ng2-file-upload';
 export function getAuthServiceConfigs() {
   const config = new AuthServiceConfig(
     [
@@ -64,6 +66,8 @@ export function getAuthServiceConfigs() {
     UserModule,
     HttpClientModule,
     BrowserAnimationsModule,
+    
+    FileUploadModule,
     BsDropdownModule.forRoot(),
     ToastrModule.forRoot({
       positionClass: 'toast-bottom-right'

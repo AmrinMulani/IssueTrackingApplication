@@ -305,6 +305,7 @@ let createIssueFunction = (req, res) => {
                 attachment: d,
                 assignedTo: req.body.assignee,
                 createdBy: req.body.createdBy,
+                modifiedBy: req.body.createdBy,
                 createdOn: time.getLocalTime(),
                 lastModifiedOn: time.getLocalTime()
             });
