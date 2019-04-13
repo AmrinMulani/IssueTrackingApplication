@@ -9,6 +9,7 @@ import { IssueService } from 'src/app/_services/issue.service';
 
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import { FileUploader } from 'ng2-file-upload';
+import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-view',
@@ -22,6 +23,7 @@ export class ViewComponent implements OnInit {
   uploader: FileUploader;
   hasBaseDropZoneOver = false;
   baseUrl = 'http://localhost:3000/api/v1/';
+  @ViewChild('updateForm') updateForm: NgForm;
 
   constructor(private route: ActivatedRoute, private modalService: BsModalService, private cd: ChangeDetectorRef,
     private issueService: IssueService, private spinner: NgxSpinnerService, private el: ElementRef,
@@ -31,6 +33,7 @@ export class ViewComponent implements OnInit {
   currentUser: any;
   allUsers: any = [];
   modalRef: BsModalRef;
+  confirmModal: BsModalRef;
   modalAttachment: BsModalRef;
   photo: any;
   attachment: any = [];
@@ -54,6 +57,18 @@ export class ViewComponent implements OnInit {
     this.modalAttachment = this.modalService.show(template, { class: 'modal-lg' });
   }
 
+  openConfirmModal(photo:string, template:TemplateRef<any>){
+    this.photo = photo;
+    this.confirmModal = this.modalService.show(template, {class: 'modal-sm'});
+  }
+  confirm(): void {
+    this.deletePhoto(this.photo);
+    this.confirmModal.hide();
+  }
+ 
+  decline(): void {
+    this.confirmModal.hide();
+  }
   // ngAfterContentInit() {
   //   this.cd.detectChanges();
   // }
@@ -108,14 +123,16 @@ export class ViewComponent implements OnInit {
       console.log(item);
       if (response) {
         const res = JSON.parse(response);
-        const photo = {
-
-        };
+        
         this.attachment = res.data.attachment;
-        this.toastr.success('File Uploaded Successfully')
+        
         // this.lgModal = this.modalService.hide(10);
       }
-    }
+    };
+    this.uploader.onCompleteAll = () =>{
+      this.toastr.success('File Uploaded Successfully')
+      this.modalAttachment.hide();
+    };
   }
   //add as watcher
   addWatcher() {
@@ -351,7 +368,7 @@ export class ViewComponent implements OnInit {
         //   attachment: '',
         //   assignee: ''
         // };
-        // this.createForm.reset(this.issue);
+        this.updateForm.reset(this.issue);
       } else {
         this.toastr.warning(res.message);
       }

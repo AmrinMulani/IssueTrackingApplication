@@ -18,13 +18,14 @@
                 <div class="form-group">
                     <label for="assignee">Assignee</label>
                     <select name="assignee" [(ngModel)]="issue.assignee" required class="form-control" id="assignee">
-                            <option *ngFor="let category of allUsers" [value]="category._id"> {{category.name | uppercase}}</option>
-                        </select>
+                        <option *ngFor="let category of allUsers" [value]="category._id"> {{category.name | uppercase}}
+                        </option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label for="status">Status</label>
                     <select name="status" [(ngModel)]="issue.status" required class="form-control" id="status">
-                            <option *ngFor="let s of status" [value]="s"> {{s}}</option>
+                        <option *ngFor="let s of status" [value]="s"> {{s}}</option>
                     </select>
                 </div>
                 <!--<div class="form-group">
@@ -39,7 +40,8 @@
                         <div class="col-sm-3 mb-3 mt-3" *ngFor="let photo of attachment">
                             <img src="http://localhost:3000/{{photo}}" (click)="openModal(photo, template)" class="img-thumbnail p-1" alt="">
                             <div class="text-center">
-                                <button type="button" class="btn btn-sm btn-danger" (click)="deletePhoto(photo)"><i class="fa fa-trash-o"></i></button>
+                                <button type="button" class="btn btn-sm btn-danger" (click)="openConfirmModal(photo, confirmTemplate)"><i
+                                        class="fa fa-trash-o"></i></button>
                             </div>
                         </div>
                     </div>
@@ -62,11 +64,13 @@
                                 <span (click)="loadEarlierComments()">Load Previous Comments</span>
                                 <br>
                                 <span *ngIf=" loadingPreviousChat==true">Loading...</span></li>
-                            <li class="p-2 list-group-item list-group-item-primary" *ngFor="let comment of comments" [ngClass]="{ 'text-right': comment.createdBy._id==currentUser.userDetails._id}">
-                                Posted By- <span class="text-capitalize"> <small>{{ comment.createdBy.name }}</small></span>
-                                <br>
+                            <li class="p-2 list-group-item" *ngFor="let comment of comments" [ngClass]="{ 'text-right list-group-item-primary': comment.createdBy._id==currentUser.userDetails._id, 'list-group-item-light': comment.createdBy._id!=currentUser.userDetails._id}">
+                                <span class="text-capitalize">
+                                    <small><u>{{ comment.createdBy.name }}</u></small></span>
+                                <br />
                                 <strong>{{comment.description}}</strong>
-                                <br><span class="text-muted"><small> {{ comment.createdOn | date:'medium' }}</small></span>
+                                <br><span class="text-muted"><small>
+                                        {{ comment.createdOn | date:'medium' }}</small></span>
                             </li>
                         </ul>
                     </div>
@@ -81,7 +85,8 @@
             <div class="card">
                 <div class="card-header">
                     <span><i class="fa fa-eye"></i> Watcher List</span>
-                    <span class="pull-right"><button type="button" *ngIf="!isAWatcher" class="btn btn-sm btn-primary" (click)="addWatcher()">Watch</button></span>
+                    <span class="pull-right"><button type="button" *ngIf="!isAWatcher" class="btn btn-sm btn-primary"
+                            (click)="addWatcher()">Watch</button></span>
                 </div>
                 <div class="card-body">
                     <div *ngIf="watchers.length>0">
@@ -89,7 +94,8 @@
                         <ul class="list-group watchers">
                             <li class="p-2 list-group-item list-group-item-light" *ngFor="let watcher of watchers">
                                 <span class="text-capitalize"> {{ watcher.watcherId.name }}</span>
-                                <br><span class="text-muted"><small> {{ watcher.createdOn | date:'medium' }}</small></span>
+                                <br><span class="text-muted"><small>
+                                        {{ watcher.createdOn | date:'medium' }}</small></span>
                             </li>
                         </ul>
                     </div>
@@ -104,7 +110,7 @@
         <div class="modal-header">
             <h4 class="modal-title pull-left"></h4>
             <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
-                  <span aria-hidden="true">&times;</span>
+                <span aria-hidden="true">&times;</span>
             </button>
         </div>
         <div class="modal-body">
@@ -121,14 +127,26 @@
     </div> -->
 </ng-template>
 
+<ng-template #confirmTemplate>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left">Delete?</h4>
+    </div>
+    <div class="modal-body text-center">
+        <p>Are you sure you want to delete?</p>
+    </div>
+    <div class="modal-footer d-flex flex-row">
 
+        <button type="button" class="justify-content-start btn btn-danger" (click)="confirm()">Yes</button>
+        <button type="button" class="justify-content-end btn btn-success" (click)="decline()">No</button>
+    </div>
+</ng-template>
 <ng-template #templateAttachment>
     <div class="modal-content">
         <div class="modal-header">
             <h4 class="modal-title pull-left">Add Attachments</h4>
             <button type="button" class="close pull-right" aria-label="Close" (click)="modalAttachment.hide()">
-                      <span aria-hidden="true">&times;</span>
-                </button>
+                <span aria-hidden="true">&times;</span>
+            </button>
         </div>
         <div class="modal-body">
             <div class="row">
@@ -138,7 +156,7 @@
                         <i class="fa fa-upload"></i> Drop photos here
                     </div>
                     Multiple
-                    <input type="file" ng2FileSelect [uploader]="uploader" multiple /><br/> Single
+                    <input type="file" ng2FileSelect [uploader]="uploader" multiple /><br /> Single
                     <input type="file" ng2FileSelect [uploader]="uploader" />
                 </div>
 
@@ -157,7 +175,8 @@
                         <tbody>
                             <tr *ngFor="let item of uploader.queue">
                                 <td><strong>{{ item?.file?.name }}</strong></td>
-                                <td *ngIf="uploader.options.isHTML5" nowrap>{{ item?.file?.size/1024/1024 | number:'.2' }} MB</td>
+                                <td *ngIf="uploader.options.isHTML5" nowrap>
+                                    {{ item?.file?.size/1024/1024 | number:'.2' }} MB</td>
                             </tr>
                         </tbody>
                     </table>
@@ -170,14 +189,14 @@
                             </div>
                         </div>
                         <button type="button" class="btn btn-success btn-s" (click)="uploader.uploadAll()" [disabled]="!uploader.getNotUploadedItems().length">
-                                                    <span class="fa fa-upload"></span> Upload
-                                                </button>
+                            <span class="fa fa-upload"></span> Upload
+                        </button>
                         <button type="button" class="btn btn-warning btn-s" (click)="uploader.cancelAll()" [disabled]="!uploader.isUploading">
-                                                    <span class="fa fa-ban"></span> Cancel
-                                                </button>
+                            <span class="fa fa-ban"></span> Cancel
+                        </button>
                         <button type="button" class="btn btn-danger btn-s" (click)="uploader.clearQueue()" [disabled]="!uploader.queue.length">
-                                                    <span class="fa fa-trash"></span> Remove
-                                                </button>
+                            <span class="fa fa-trash"></span> Remove
+                        </button>
                     </div>
                 </div>
             </div>

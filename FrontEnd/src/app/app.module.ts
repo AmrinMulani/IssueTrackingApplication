@@ -38,10 +38,6 @@ import { FileUploadModule } from 'ng2-file-upload';
 export function getAuthServiceConfigs() {
   const config = new AuthServiceConfig(
     [
-      // {
-      //   id: FacebookLoginProvider.PROVIDER_ID,
-      //   provider: new FacebookLoginProvider('Your_Facebook_Client_ID')
-      // },
       {
         id: GoogleLoginProvider.PROVIDER_ID,
         provider: new GoogleLoginProvider('1091082596943-49t59doqnuiim4fl7nuvt1229md2us09.apps.googleusercontent.com')

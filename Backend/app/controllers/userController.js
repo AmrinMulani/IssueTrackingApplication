@@ -58,6 +58,8 @@ let loginFunction = (req, res) => {
     let getUser = (req, res) => {
         const body = req.body;
         const typeOfReq = body.type;
+        // console.log('body.idToken')
+        // console.log(body.idToken)
         switch (typeOfReq) {
             case 'google':
                 return googleAuth

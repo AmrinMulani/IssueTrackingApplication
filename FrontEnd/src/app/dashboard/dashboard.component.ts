@@ -38,6 +38,9 @@ export class DashboardComponent implements OnInit {
       lengthMenu: [10, 25, 50, 100],
       serverSide: true,
       processing: true,
+      language: {
+        processing: '<i class="fa fa-spinner fa-spin fa-fw text-primary"></i><span class="sr-only">Loading...</span>'
+      },
       ajax: (dataTablesParameters: any, callback) => {
         that.http
           .post<DataTablesResponse>(

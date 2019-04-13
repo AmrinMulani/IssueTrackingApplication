@@ -10,26 +10,30 @@ import { BehaviorSubject, Observable, Subscription } from 'rxjs';
   templateUrl: './nav.component.html',
   styleUrls: ['./nav.component.css']
 })
-export class NavComponent implements OnInit {
+export class NavComponent implements OnInit, OnDestroy {
   userName: any;
   photoUrl: any;
 
   currentUserSubscription: Subscription;
+
+  ngOnDestroy() {
+    // unsubscribe to ensure no memory leaks
+    this.currentUserSubscription.unsubscribe();
+  }
   constructor(private authService: AuthenticationService, private route: ActivatedRoute, private toastr: ToastrService,
     private router: Router) {
-    // route.params.subscribe(
-    //   () => {
-        
-    //   });
   }
   ngOnInit() {
-    this.authService.currentUser.subscribe(user => {
+    this.currentUserSubscription = this.authService.currentUser.subscribe(user => {
       console.log('user')
       console.log(user)
-      this.userName = user.userDetails.name;
-      this.photoUrl = user.userDetails.photoUrl;
+      if (user) {
+        this.userName = user.userDetails.name;
+        this.photoUrl = user.userDetails.photoUrl;
+      }
     });
   }
+
   loggedIn() {
     //return true
     return this.authService.loggedIn();

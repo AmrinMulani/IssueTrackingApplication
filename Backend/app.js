@@ -7,14 +7,15 @@ const appConfig = require('./config/appConfig');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 const fs = require('fs');
-
+const passport = require('passport');
+const app = express();
+//const social = require('./app/libs/passport')(app, passport);
 /* Middleware error handler and ip logger */
 const routeLoggerMiddleware = require('./app/middlewares/routeLogger.js');
 const globalErrorMiddleware = require('./app/middlewares/appErrorHandler');
 
 //logger library
 const logger = require('./app/libs/loggerLib');
-const app = express();
 
 app.use(morgan('dev'));
 
@@ -22,6 +23,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
+app.use(passport.initialize());
 app.use(routeLoggerMiddleware.logIp);
 app.use(globalErrorMiddleware.globalErrorHandler);
 console.log('\n\n\n\n\n\n\n\n' + path.join(__dirname, 'uploads'));

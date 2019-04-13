@@ -1,12 +1,15 @@
 const GOOGLE_CLIENT_ID = '1091082596943-49t59doqnuiim4fl7nuvt1229md2us09.apps.googleusercontent.com';
 const { OAuth2Client } = require('google-auth-library');
-var client = new OAuth2Client(GOOGLE_CLIENT_ID, 'Q3ISkgY1ZodiTMZMuFZ8Pj2C', '');
+var client = new OAuth2Client(GOOGLE_CLIENT_ID, 'NfRQmYpzacLPB2cv0fbcGs3Y', '');
 
 module.exports.getGoogleUser = code => {
     return client.verifyIdToken({ idToken: code, audience: GOOGLE_CLIENT_ID })
         .then(login => {
+            console.log('inside login')
             var payload = login.getPayload();
             var audience = payload.aud;
+            console.log(payload)
+            console.log(audience)
             if (audience !== GOOGLE_CLIENT_ID) {
                 throw new Error(
                     'error while authenticating google user: audience mismatch: wanted [' +
@@ -25,6 +28,9 @@ module.exports.getGoogleUser = code => {
             };
         })
         .then(user => {
+            console.log('user')
+            console.log(user)
+
             return user;
         })
         .catch(err => {

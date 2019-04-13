@@ -3,6 +3,9 @@ const router = express.Router();
 const userController = require("../controllers/userController");
 const appConfig = require("./../../config/appConfig");
 
+const passport = require('passport');
+
+require('../middlewares/facebook');
 const multer = require('multer');
 
 var storage = multer.diskStorage({
@@ -95,6 +98,14 @@ module.exports.setRouter = (app) => {
 
     app.post(`${baseUrl}/create`, upload.array('photos'), userController.createIssue);
     app.post(`${baseUrl}/get/all`, upload.array('photos'), userController.getAllReq);
+
+
+
+    app.use(passport.initialize());
+    app.get('/api/authentication/facebook/start',
+        passport.authenticate('facebook', { session: false }));
+    app.get('/api/authentication/facebook/redirect',
+        passport.authenticate('facebook', { session: false, successRedirect: 'http://localhost:4200/dashboard', failureRedirect: '/dashboard' }));
     //get all users
     //app.get(`${baseUrl}/get/all`, userController.getAllUsers);
 
