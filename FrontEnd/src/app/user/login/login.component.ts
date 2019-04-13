@@ -43,8 +43,15 @@ export class LoginComponent implements OnInit {
   public signInSocial(using: String): void {
     let socialPlatformProvider = "";
     console.log(using)
-    if (using === "Google")
+    if (using === "Google"){
       socialPlatformProvider = GoogleLoginProvider.PROVIDER_ID;
+      this.socialAuthService.signIn(socialPlatformProvider).then(userData => {
+          console.log('userData hai')
+          console.log(userData)
+          this.openSpinner(true);
+          this.apiConnection(userData);
+        });
+    }
     else
     {
       this.http.get('http://localhost:3000/api/authentication/facebook/start').subscribe();
