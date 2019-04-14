@@ -11,6 +11,7 @@ import {
 } from 'angular-6-social-login';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { HttpClient } from '@angular/common/http';
+import { UserService } from 'src/app/_services/user.service';
 
 @Component({
   selector: 'app-login',
@@ -22,8 +23,9 @@ export class LoginComponent implements OnInit {
   model: any = {};
   //private user: SocialUser;
   private loggedIn: boolean;
-  constructor(private socialAuthService: AuthService, private spinner: NgxSpinnerService, public authenticationService: AuthenticationService, private toastr: ToastrService,
-    private router: Router, private http:HttpClient) { }
+  constructor(private socialAuthService: AuthService,
+    private userService: UserService, private spinner: NgxSpinnerService, public authenticationService: AuthenticationService, private toastr: ToastrService,
+    private router: Router, private http: HttpClient) { }
 
   ngOnInit() {
     if (this.authenticationService.currentUserValue) {
@@ -40,29 +42,42 @@ export class LoginComponent implements OnInit {
       this.spinner.hide();
   };//end of openSpinner function
 
+  login() {
+
+    this.openSpinner(true);
+    this.authenticationService.login(this.model).subscribe(data => {
+      this.router.navigate(['/dashboard'])
+      this.toastr.success(data.message);
+    }, error => {
+      this.openSpinner(false);
+      this.toastr.error(error.message);
+    });
+  }
   public signInSocial(using: String): void {
     let socialPlatformProvider = "";
     console.log(using)
-    if (using === "Google"){
+    if (using === "Google") {
       socialPlatformProvider = GoogleLoginProvider.PROVIDER_ID;
       this.socialAuthService.signIn(socialPlatformProvider).then(userData => {
-          console.log('userData hai')
-          console.log(userData)
-          this.openSpinner(true);
-          this.apiConnection(userData);
-        });
+        console.log('userData hai')
+        console.log(userData)
+        this.openSpinner(true);
+        this.apiConnection(userData);
+      });
     }
-    else
-    {
+    else {
       this.http.get('http://localhost:3000/api/authentication/facebook/start').subscribe();
     }
-      // //socialPlatformProvider = FacebookLoginProvider.PROVIDER_ID;
+    // //socialPlatformProvider = FacebookLoginProvider.PROVIDER_ID;
     // this.socialAuthService.signIn(socialPlatformProvider).then(userData => {
     //   console.log('userData hai')
     //   console.log(userData)
     //   this.openSpinner(true);
     //   this.apiConnection(userData);
     // });
+  }
+  goToSignUp() {
+    this.router.navigate(['/signup']);
   }
   apiConnection(data) {
     let socialObj = {

@@ -1,9 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Sanitizer } from '@angular/core';
 
 import { AuthenticationService } from 'src/app/_services/authentication.service';
 import { ToastrService } from 'ngx-toastr';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-nav',
@@ -11,8 +12,11 @@ import { BehaviorSubject, Observable, Subscription } from 'rxjs';
   styleUrls: ['./nav.component.css']
 })
 export class NavComponent implements OnInit, OnDestroy {
+  
+  
+
   userName: any;
-  photoUrl: any;
+  photoUrl: SafeUrl;
 
   currentUserSubscription: Subscription;
 
@@ -20,7 +24,8 @@ export class NavComponent implements OnInit, OnDestroy {
     // unsubscribe to ensure no memory leaks
     this.currentUserSubscription.unsubscribe();
   }
-  constructor(private authService: AuthenticationService, private route: ActivatedRoute, private toastr: ToastrService,
+  constructor(private authService: AuthenticationService,
+    public sanitizer: DomSanitizer, private route: ActivatedRoute, private toastr: ToastrService,
     private router: Router) {
   }
   ngOnInit() {
@@ -29,7 +34,10 @@ export class NavComponent implements OnInit, OnDestroy {
       console.log(user)
       if (user) {
         this.userName = user.userDetails.name;
-        this.photoUrl = user.userDetails.photoUrl;
+        let photo = user.userDetails.photoUrl;
+        this.photoUrl = photo;
+        // this.photoUrl = this.sanitizer.bypassSecurityTrustUrl(photo);
+        console.log(this.photoUrl)
       }
     });
   }

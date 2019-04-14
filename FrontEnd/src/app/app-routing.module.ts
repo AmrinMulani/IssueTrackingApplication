@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { LoginComponent } from './user/login/login.component';
+import { SignupComponent } from './user/signup/signup.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { AuthGuard } from './_guards/auth.guard';
 import { CreateComponent } from './issue/create/create.component';
@@ -9,6 +10,7 @@ import { ViewComponent } from './issue/view/view.component';
 
 const routes: Routes = [
   { path: '', component: LoginComponent },
+  { path: 'signup', component: SignupComponent },
   {
     path: '',
     runGuardsAndResolvers: 'always',

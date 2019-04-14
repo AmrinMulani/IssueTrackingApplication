@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 
-import { HttpClient, HttpParams } from '@angular/common/http'
+import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http'
 
-import { Observable, BehaviorSubject } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, BehaviorSubject, throwError } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 
@@ -68,6 +68,31 @@ export class AuthenticationService {
       }));
   }
 
+  login(data): Observable<any> {
+    const params = new HttpParams()
+      .set('username', data.username)
+      .set('password', data.password);
+    return this.httpClient.post<any>(`${this.url}/login`, params)
+      .pipe(map(user => {
+        if (user && user.data.authToken) {
+          console.log('user.data.authToken')
+          console.log(user.data.authToken)
+          // store user details and jwt token in local storage to keep user logged in between page refreshes
+          localStorage.setItem('userData', JSON.stringify(user.data));
+          this.changeUserData(user.data);
+          this.currentData = user.data;
+        }
+        return user;
+      }))
+      .pipe(catchError(e => this.handleError(e)));
+  }
+  //exception handler
+  private handleError(err: HttpErrorResponse) {
+    console.log(err)
+    console.log("Handle Http calls error");
+    console.log(err.error.message);
+    return throwError(err.error);
+  }
   storeData(data) {
     this.userName = data.userDetails.name;
     localStorage.setItem('userData', JSON.stringify(data));
