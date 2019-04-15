@@ -30,7 +30,7 @@ export class MyListComponent implements OnInit {
       ajax: (dataTablesParameters: any, callback) => {
         that.http
           .post<DataTablesResponse>(
-            'http://localhost:3000/api/v1/users/get/all',
+            '${environment.baseUrl}/users/get/all',
             dataTablesParameters, {}
           ).subscribe(resp => {
             that.persons = resp.data;

@@ -28,7 +28,6 @@ var client = new OAuth2Client(GOOGLE_CLIENT_ID, 'Q3ISkgY1ZodiTMZMuFZ8Pj2C', '');
 var fs = require('fs');
 const path = require('path');
 let loginFunction = (req, res) => {
-
     let validateParameters = () => {
         return new Promise((resolve, reject) => {
             if (check.isEmpty(req.body.username) || check.isEmpty(req.body.password)) {
@@ -542,6 +541,8 @@ let register = (req, res) => {
     console.log('req.body')
     console.log(req.body)
 
+    var env = process.env.NODE_ENV || 'dev';
+    console.log('\n\n\n\n\n\n\n\n' + env);
     let checkParameters = (req, res) => {
         return new Promise((resolve, reject) => {
             if (check.isEmpty(req.body.name) || check.isEmpty(req.body.email) || check.isEmpty(req.body.password)) {
@@ -579,6 +580,11 @@ let register = (req, res) => {
         return new Promise((resolve, reject) => {
 
             let dirName = path.join(__dirname, '../../uploads')
+            url = '';
+            if (env === 'dev')
+                url = `http://localhost:3000/${req.file.filename}`;
+            else
+                url = `http://myapp.issuetrackingtool.ga/${req.file.filename}`;
             let user = new UserModel({
                 userId: shortid.generate(),
                 name: titleCase(req.body.name.trim()),
@@ -586,7 +592,7 @@ let register = (req, res) => {
                 password: passwordLib.hashpassword(req.body.password),
                 provider: "local",
                 providerId: "",
-                photoUrl: req.file.filename,
+                photoUrl: url,
                 createdOn: time.getLocalTime()
             });
             console.log('user')

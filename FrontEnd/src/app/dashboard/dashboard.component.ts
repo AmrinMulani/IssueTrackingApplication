@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { DataTablesResponse } from '../_models/DataTablesResponse';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { AuthenticationService } from '../_services/authentication.service';
+import { environment } from 'src/environments/environment.prod';
 
 @Component({
   selector: 'app-dashboard',
@@ -44,7 +45,7 @@ export class DashboardComponent implements OnInit {
       ajax: (dataTablesParameters: any, callback) => {
         that.http
           .post<DataTablesResponse>(
-            `http://localhost:3000/api/v1/issues/get/reportedBy/${this.currentUser.userDetails._id}`,
+            `${environment.baseUrl}/issues/get/reportedBy/${this.currentUser.userDetails._id}`,
             dataTablesParameters, {}
           ).subscribe(resp => {
             that.issues = resp.data;
