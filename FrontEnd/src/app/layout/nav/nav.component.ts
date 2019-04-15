@@ -31,12 +31,13 @@ export class NavComponent implements OnInit, OnDestroy {
   }
   ngOnInit() {
     this.currentUserSubscription = this.authService.currentUser.subscribe(user => {
-      console.log('user')
-      console.log(user)
       if (user) {
         this.userName = user.userDetails.name;
         let photo = user.userDetails.photoUrl;
-        this.photoUrl = environment.baseUrl + "" + photo;
+        if (user.userDetails.provider === "local")
+          this.photoUrl = environment.baseUrl + "" + photo;
+        else
+          this.photoUrl = photo;
         // this.photoUrl = this.sanitizer.bypassSecurityTrustUrl(photo);
         console.log(this.photoUrl)
       }
