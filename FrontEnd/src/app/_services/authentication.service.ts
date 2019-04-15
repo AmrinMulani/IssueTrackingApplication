@@ -13,8 +13,7 @@ import { environment } from 'src/environments/environment';
 })
 export class AuthenticationService {
 
-  //private url = "http://myapp.issuetrackingtool.ga/api/v1/users";
-  private url = environment.baseUrl;
+  private url = environment.baseUrl + "api/v1";
   userName: string;
 
   //private currentUserSubject: BehaviorSubject<any>;

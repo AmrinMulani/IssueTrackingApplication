@@ -3,6 +3,7 @@ import { ToastrService } from 'ngx-toastr';
 import { HttpClient } from '@angular/common/http';
 import { Person } from 'src/app/_models/person';
 import { DataTablesResponse } from 'src/app/_models/DataTablesResponse';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-my-list',
@@ -30,7 +31,7 @@ export class MyListComponent implements OnInit {
       ajax: (dataTablesParameters: any, callback) => {
         that.http
           .post<DataTablesResponse>(
-            '${environment.baseUrl}/users/get/all',
+            `${environment.baseUrl}api/v1/users/get/all`,
             dataTablesParameters, {}
           ).subscribe(resp => {
             that.persons = resp.data;

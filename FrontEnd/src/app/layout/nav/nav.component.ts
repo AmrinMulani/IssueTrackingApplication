@@ -5,6 +5,7 @@ import { ToastrService } from 'ngx-toastr';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-nav',
@@ -12,8 +13,8 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
   styleUrls: ['./nav.component.css']
 })
 export class NavComponent implements OnInit, OnDestroy {
-  
-  
+
+
 
   userName: any;
   photoUrl: SafeUrl;
@@ -35,7 +36,7 @@ export class NavComponent implements OnInit, OnDestroy {
       if (user) {
         this.userName = user.userDetails.name;
         let photo = user.userDetails.photoUrl;
-        this.photoUrl = photo;
+        this.photoUrl = environment.baseUrl + "" + photo;
         // this.photoUrl = this.sanitizer.bypassSecurityTrustUrl(photo);
         console.log(this.photoUrl)
       }

@@ -13,7 +13,7 @@ export class UserService {
   // private url = "http://localhost:3000/api/v1/users";
   //private url = "http://myapp.issuetrackingtool.ga/api/v1/users";
 
-  url = environment.baseUrl;
+  url = environment.baseUrl + "api/v1";
   constructor(private http: HttpClient) { }
 
 

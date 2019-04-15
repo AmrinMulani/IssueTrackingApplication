@@ -45,7 +45,7 @@ export class DashboardComponent implements OnInit {
       ajax: (dataTablesParameters: any, callback) => {
         that.http
           .post<DataTablesResponse>(
-            `${environment.baseUrl}/issues/get/reportedBy/${this.currentUser.userDetails._id}`,
+            `${environment.baseUrl}api/v1/issues/get/reportedBy/${this.currentUser.userDetails._id}`,
             dataTablesParameters, {}
           ).subscribe(resp => {
             that.issues = resp.data;

@@ -8,8 +8,7 @@ import { environment } from 'src/environments/environment';
 })
 export class IssueService {
 
-  //private url = "http://localhost:3000/api/v1/";
-  url = environment.baseUrl;
+  url = environment.baseUrl + "api/v1";
 
   constructor(private http: HttpClient) { }
 
@@ -62,6 +61,6 @@ export class IssueService {
       .set('status', data.status)
       .set('modifiedBy', data.modifiedBy)
       .set('authToken', data.authToken);
-      return this.http.put(`${this.url}/issues/${data.issueId}`,params);
+    return this.http.put(`${this.url}/issues/${data.issueId}`, params);
   };
 }
