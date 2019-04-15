@@ -12,7 +12,7 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class AuthenticationService {
 
-  private url = "http://localhost:3000/api/v1/users";
+  private url = "http://myapp.issuetrackingtool.ga/api/v1/users";
   userName: string;
 
   //private currentUserSubject: BehaviorSubject<any>;

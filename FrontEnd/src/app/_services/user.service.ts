@@ -9,7 +9,9 @@ import { catchError } from 'rxjs/operators';
 })
 export class UserService {
 
-  private url = "http://localhost:3000/api/v1/users";
+  // private url = "http://localhost:3000/api/v1/users";
+  private url = "http://myapp.issuetrackingtool.ga/api/v1/users";
+
   constructor(private http: HttpClient) { }
 
 
