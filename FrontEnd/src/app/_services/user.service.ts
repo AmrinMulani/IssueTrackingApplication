@@ -9,7 +9,7 @@ import { catchError } from 'rxjs/operators';
 })
 export class UserService {
 
-  private url = "http://api.issuetrackingtool.ga/api/v1/users";
+  private url = "http://api.issuetrackingtool.ga";
   constructor(private http: HttpClient) { }
 
 
@@ -26,7 +26,7 @@ export class UserService {
 
   //calling from sign up page
   register(data): Observable<any> {
-    return this.http.post(`${this.url}/register`, data)
+    return this.http.post(`${this.url}/api/v1/users/register`, data)
       .pipe(catchError(e => this.handleError(e)));
   };//end of register method
 
