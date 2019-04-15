@@ -6,13 +6,15 @@ import { Observable, BehaviorSubject, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthenticationService {
 
-  private url = "http://myapp.issuetrackingtool.ga/api/v1/users";
+  //private url = "http://myapp.issuetrackingtool.ga/api/v1/users";
+  private url = environment.baseUrl;
   userName: string;
 
   //private currentUserSubject: BehaviorSubject<any>;
@@ -53,7 +55,7 @@ export class AuthenticationService {
     var httpParams = new HttpParams()
       .set('type', p.type)
       .set('idToken', p.idToken);
-    return this.httpClient.post<any>(`${this.url}/signInSocial`, httpParams)
+    return this.httpClient.post<any>(`${this.url}/users/signInSocial`, httpParams)
       .pipe(map(user => {
         if (user && user.data.authToken) {
           console.log('user.data.authToken')
@@ -72,7 +74,7 @@ export class AuthenticationService {
     const params = new HttpParams()
       .set('username', data.username)
       .set('password', data.password);
-    return this.httpClient.post<any>(`${this.url}/login`, params)
+    return this.httpClient.post<any>(`${this.url}/users/login`, params)
       .pipe(map(user => {
         if (user && user.data.authToken) {
           console.log('user.data.authToken')
