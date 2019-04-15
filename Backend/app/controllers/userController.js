@@ -580,11 +580,7 @@ let register = (req, res) => {
         return new Promise((resolve, reject) => {
 
             let dirName = path.join(__dirname, '../../uploads')
-            url = '';
-            if (env === 'dev')
-                url = `http://localhost:3000/${req.file.filename}`;
-            else
-                url = `http://myapp.issuetrackingtool.ga/${req.file.filename}`;
+
             let user = new UserModel({
                 userId: shortid.generate(),
                 name: titleCase(req.body.name.trim()),
@@ -592,7 +588,7 @@ let register = (req, res) => {
                 password: passwordLib.hashpassword(req.body.password),
                 provider: "local",
                 providerId: "",
-                photoUrl: url,
+                photoUrl: req.file.filename,
                 createdOn: time.getLocalTime()
             });
             console.log('user')
