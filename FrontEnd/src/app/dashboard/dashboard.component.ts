@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { DataTablesResponse } from '../_models/DataTablesResponse';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { AuthenticationService } from '../_services/authentication.service';
-import { environment } from 'src/environments/environment.prod';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-dashboard',
@@ -28,7 +28,7 @@ export class DashboardComponent implements OnInit {
 
     this.authService.currentUser.subscribe(user => {
       console.log('user')
-      // console.log(user)
+       console.log(user)
       this.currentUser = user;
     });
 

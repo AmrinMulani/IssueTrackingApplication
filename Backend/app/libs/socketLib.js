@@ -14,7 +14,7 @@ const response = require('./responseLib');
 
 const time = require('./timeLib');
 
-const NotificationModel = mongoose.model('Notification');
+//const NotificationModel = mongoose.model('Notification');
 
 const redisLib = require('./redisLib')
 const friendLib = require('./friendListLib')
@@ -32,7 +32,7 @@ let setServer = (server) => {
     myIo.on('connection', (socket) => {
         rooms = [];
         console.log("on connection emitting verify user");
-        socket.emit("verifyUser", "");
+        socket.emit("verifyUser", "verifying user");
         console.log('socket.userId')
         console.log(socket.userId)
 
@@ -48,28 +48,18 @@ let setServer = (server) => {
                     } else {
                         console.log('user is verified, setting details');
                         let currentUser = user.data;
-
+                        console.log('\n\n\n\n\n\ncurrentUser');
+                        console.log(currentUser);
                         //setting socket user id
+
                         socket.userId = currentUser.userId
-                        let fullName = `${currentUser.firstName} ${currentUser.lastName}`;
 
 
                         //let key = currentUser.userId;
-                        let value = fullName;
-                        let key = currentUser._id + "Room";
-                        // let setUserOnline = redisLib.setANewOnlineUserInHash("rooms", key, value, (err, result) => {
-                        //     if (err) {
-                        //         console.log("some error occurred")
-                        //     } else {
-                        //         //setting room name
-                        //         socket.room = key;
-                        //         //joining chat-group room.
-                        //         socket.join(socket.room);
-                        //     }
-                        // });
+                        // let key = currentUser._id + "Room";
 
-                        if (rooms.indexOf(key) < 0)
-                            rooms.push(key)
+                        // if (rooms.indexOf(key) < 0)
+                        //     rooms.push(key)
 
 
                         friendLib.getAllFriendsId(currentUser._id, (err, result) => {
@@ -79,12 +69,14 @@ let setServer = (server) => {
                                     error: 'Please provide valid auth token'
                                 })
                             } else {
-                                // console.log('result')
-                                // console.log(result)
+                                console.log('result')
+                                console.log(result)
 
                                 result.forEach(element => {
                                     let room = '';
-                                    currentUser._id === element.userId._id ? room = element.sentTo._id + 'Room' : room = element.userId._id + 'Room'
+                                    // currentUser._id === element.userId._id ? room = element.sentTo._id + 'Room' : room = element.userId._id + 'Room'
+
+                                    room = element + 'Room';
 
                                     var index = rooms.indexOf(room);
                                     if (index < 0)
@@ -92,7 +84,6 @@ let setServer = (server) => {
                                         // socket.room = key;
                                         // socket.join(room);
                                 });
-
                                 createRoom();
                             }
                         });
@@ -116,10 +107,8 @@ let setServer = (server) => {
             }) // end of listening set-user event
 
         socket.on('disconnect', () => {
-
                 console.log('user is disconnected');
                 console.log(socket.userId);
-
                 var removeIndex = allUsers.map(function(item) {
                     return item.userId;
                 }).indexOf(socket.userId);
@@ -141,53 +130,53 @@ let setServer = (server) => {
 
             }) //end of on disconnect
 
-        socket.on('send-request', (data) => {
-            // console.log('SEND-REQUEST DATA')
-            // console.log(data)
-            // console.log('socket.room DATA')
+        // socket.on('send-request', (data) => {
+        //     // console.log('SEND-REQUEST DATA')
+        //     // console.log(data)
+        //     // console.log('socket.room DATA')
 
-            let roomName = data.createdBy + 'Room';
-            console.log('roomName')
-            console.log(roomName)
+        //     let roomName = data.createdBy + 'Room';
+        //     console.log('roomName')
+        //     console.log(roomName)
 
-            // socket.to(`'${roomName}'`)
-            // socket.to(roomName)
+        //     // socket.to(`'${roomName}'`)
+        //     // socket.to(roomName)
 
-            // var clients = myIo.clients(roomName); // all users from room `room`
-            // console.log('clients')
-            // console.log(clients)
+        //     // var clients = myIo.clients(roomName); // all users from room `room`
+        //     // console.log('clients')
+        //     // console.log(clients)
 
-            // io.of('/chat').clients((error, clients) => {
-            //     if (error) throw error;
-            //     console.log(clients); // => [PZDoMHjiu8PYfRiKAAAF, Anw2LatarvGVVXEIAAAD]
-            // });
-            socket.to(roomName)
-                .broadcast.emit('multi-todo-transaction', data.remarks);
-        })
-        socket.on('friend-request', (data) => {
-            console.log("socket friend-request called")
-            let newData = {
-                notificationId: shortid.generate(),
-                senderId: data.userId_id,
-                receiverId: data.sentTo_id,
-                message: `You've received a friend request from ${data.senderName}`,
-                createdOn: time.now()
-            };
+        //     // io.of('/chat').clients((error, clients) => {
+        //     //     if (error) throw error;
+        //     //     console.log(clients); // => [PZDoMHjiu8PYfRiKAAAF, Anw2LatarvGVVXEIAAAD]
+        //     // });
+        //     socket.to(roomName)
+        //         .broadcast.emit('multi-todo-transaction', data.remarks);
+        // })
+        // socket.on('friend-request', (data) => {
+        //     console.log("socket friend-request called")
+        //     let newData = {
+        //         notificationId: shortid.generate(),
+        //         senderId: data.userId_id,
+        //         receiverId: data.sentTo_id,
+        //         message: `You've received a friend request from ${data.senderName}`,
+        //         createdOn: time.now()
+        //     };
 
-            console.log(newData)
-                // event to save chat.
-            setTimeout(function() {
-                eventEmitter.emit('save-request', newData);
-            }, 2000)
+        //     console.log(newData)
+        //         // event to save chat.
+        //     setTimeout(function() {
+        //         eventEmitter.emit('save-request', newData);
+        //     }, 2000)
 
-            console.log('noti');
-            console.log(newData);
-            myIo.emit(data.sentTo_id, newData)
-        })
+        //     console.log('noti');
+        //     console.log(newData);
+        //     myIo.emit(data.sentTo_id, newData)
+        // })
 
-        socket.on('typing', (fullName) => {
-            socket.to(socket.room).broadcast.emit('typing', fullName);
-        })
+        // socket.on('typing', (fullName) => {
+        //     socket.to(socket.room).broadcast.emit('typing', fullName);
+        // })
     });
 }
 
@@ -195,21 +184,21 @@ let setServer = (server) => {
 // database operations are kept outside of socket.io code.
 
 // saving chats to database.
-eventEmitter.on('save-request', (data) => {
+// eventEmitter.on('save-request', (data) => {
 
-    let notificationObj = new NotificationModel(data);
-    notificationObj.save((err, result) => {
-        if (err) {
-            console.log(`error occurred: ${err}`);
-        } else if (result === undefined || result === null || result === "") {
-            console.log("Notification is not saved.");
-        } else {
-            console.log("notification saved.");
-            console.log(result);
-            dataSS = result;
-        }
-    });
-}); // end of saving notifications.
+//     let notificationObj = new NotificationModel(data);
+//     notificationObj.save((err, result) => {
+//         if (err) {
+//             console.log(`error occurred: ${err}`);
+//         } else if (result === undefined || result === null || result === "") {
+//             console.log("Notification is not saved.");
+//         } else {
+//             console.log("notification saved.");
+//             console.log(result);
+//             dataSS = result;
+//         }
+//     });
+// }); // end of saving notifications.
 
 module.exports = {
     setServer: setServer
