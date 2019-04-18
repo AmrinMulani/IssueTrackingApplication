@@ -16,7 +16,7 @@ const time = require('./timeLib');
 
 //const NotificationModel = mongoose.model('Notification');
 
-const redisLib = require('./redisLib')
+//const redisLib = require('./redisLib')
 const friendLib = require('./friendListLib')
 
 var dataSS = [];

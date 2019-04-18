@@ -1,14 +1,8 @@
 const express = require('express');
-const router = express.Router();
 const userController = require("../controllers/userController");
 const appConfig = require("./../../config/appConfig");
 
-const token = require('../libs/tokenLib');
 
-const passport = require('passport');
-require('../middlewares/facebook');
-require('../middlewares/google');
-require('../middlewares/jwt');
 
 const multer = require('multer');
 
@@ -105,56 +99,4 @@ module.exports.setRouter = (app) => {
 
 
     app.post(`${baseUrl}/register`, upload.single('photo'), userController.register);
-    //     scope: ['email', 'public_profile', 'user_location', 'id',
-    //     'first_name',
-    //     'last_name',
-    //     'middle_name',
-    //     'name',
-    //     'name_format',
-    //     'picture',
-    //     'short_name'
-    // ],
-    app.use(passport.initialize());
-
-
-    app.get('/api/authentication/google/start',
-        passport.authenticate('google', { session: false, scope: ['openid', 'profile', 'email'] }));
-    app.get('/api/authentication/google/redirect',
-        passport.authenticate('google', { session: false }), generateUserToken);
-
-    app.get('/api/authentication/facebook/start',
-        passport.authenticate('facebook', {
-            scope: ['email', 'public_profile', 'user_location'],
-            session: false
-        }));
-    app.get('/api/authentication/facebook/redirect',
-        passport.authenticate('facebook', { session: false, failureRedirect: '/login' }));
-    //get all users
-    //app.get(`${baseUrl}/get/all`, userController.getAllUsers);
-
-
-    //get notifications
-    //app.get(`${baseUrl}/get/notifications`, userController.getNotifications);
-    //send friend request
-    // app.post(`${baseUrl}/request/create`, userController.sendFriendRequest)
-
-    function generateUserToken(req, res) {
-        const t = "";
-        token.generateToken(result, (err, tokenDetails) => {
-            if (err) {
-                console.log('err');
-                console.log(err);
-            } else {
-                tokenDetails.userId = req.user.id;
-                tokenDetails.userDetails = result;
-                console.log('tokenDetails')
-                console.log(tokenDetails)
-                token = tokenDetails;
-
-                res.send(t);
-            }
-
-        });
-    }
-
 }
