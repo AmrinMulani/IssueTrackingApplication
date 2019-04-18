@@ -11,8 +11,12 @@
             </div>
             <div class="form-group">
                 <label for="description">Description</label>
-                <textarea rows="15" name="description" class="form-control" [froalaEditor]="options" #description="ngModel" [ngClass]="description.valid && (description.dirty || description.touched) ? 'is-valid' : 'is-invalid'" required [(ngModel)]="issue.description"
-                    id="description" placeholder="Enter description of the issue"></textarea>
+                <editor [(ngModel)]="issue.description"
+                 name="description" 
+                 apiKey="6yjxkesit1nx0tsl0uca65sdy839l5xa85h686e60b6swbsr"
+                  [init]="{plugins: 'link', menubar:'edit format'}"></editor>
+                <!-- <textarea rows="15" name="description" class="form-control" [froalaEditor]="options" #description="ngModel" [ngClass]="description.valid && (description.dirty || description.touched) ? 'is-valid' : 'is-invalid'" required [(ngModel)]="issue.description"
+                    id="description" placeholder="Enter description of the issue"></textarea> -->
             </div>
 
             <div class="form-group">

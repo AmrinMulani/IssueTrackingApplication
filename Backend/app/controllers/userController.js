@@ -84,7 +84,7 @@ let loginFunction = (req, res) => {
         return new Promise((resolve, reject) => {
             token.generateToken(userDetails, (err, tokenDetails) => {
                 if (err) {
-                    //console.log(err)
+                    ////console.log(err)
                     let apiResponse = response.generate(true, 'Failed To Generate Token', 500, null)
                     reject(apiResponse)
                 } else {
@@ -96,7 +96,7 @@ let loginFunction = (req, res) => {
         })
     }; //end of generateToken method
     let saveToken = (tokenDetails) => {
-        //console.log(tokenDetails)
+        ////console.log(tokenDetails)
         return new Promise((resolve, reject) => {
             AuthModel.findOne({ userId: tokenDetails.userId },
                 (err, retrievedTokenDetails) => {
@@ -106,7 +106,7 @@ let loginFunction = (req, res) => {
                             500, null);
                         reject(apiResponse);
                     } else if (check.isEmpty(retrievedTokenDetails)) {
-                        //console.log('empty auth token')
+                        ////console.log('empty auth token')
                         let newAuthToken = new AuthModel({
                             userId: tokenDetails.userId,
                             authToken: tokenDetails.token,
@@ -127,18 +127,18 @@ let loginFunction = (req, res) => {
                             }
                         })
                     } else {
-                        //console.log('already exist auth token')
+                        ////console.log('already exist auth token')
                         retrievedTokenDetails.authToken = tokenDetails.token;
                         retrievedTokenDetails.tokenSecret = tokenDetails.tokenSecret;
                         retrievedTokenDetails.tokenGenerationTime = time.now();
                         retrievedTokenDetails.save((err, newTokenDetails) => {
                             if (err) {
-                                //console.log(err);
+                                ////console.log(err);
                                 logger.error(err.message, 'userController : saveToken', 10)
                                 let apiResponse = response.generate(true, 'Failed to generate token', 500, 10);
                                 reject(apiResponse);
                             } else {
-                                //console.log(newTokenDetails)
+                                ////console.log(newTokenDetails)
                                 let responseBody = {
                                     authToken: newTokenDetails.authToken,
                                     userDetails: tokenDetails.userDetails
@@ -171,12 +171,12 @@ let signInSocial = (req, res) => {
     //     return new Promise((resolve, reject) => {
     //         const body = req.body;
     //         const typeOfReq = body.type;
-    //         console.log(typeOfReq);
+    //         //console.log(typeOfReq);
     //         if (typeOfReq === 'google') {
     //             googleAuth.getGoogleUser(body.idToken)
     //             .then(apiResponse => {
-    //                 console.log('apiResponse')
-    //                 console.log(apiResponse)
+    //                 //console.log('apiResponse')
+    //                 //console.log(apiResponse)
     //                 resolve(apiResponse)
     //             });
     //         }
@@ -186,25 +186,25 @@ let signInSocial = (req, res) => {
     let getUser = (req, res) => {
         const body = req.body;
         const typeOfReq = body.type;
-        // console.log('body.idToken')
-        // console.log(body.idToken)
+        // //console.log('body.idToken')
+        // //console.log(body.idToken)
         switch (typeOfReq) {
             case 'google':
                 return googleAuth
                     .getGoogleUser(body.idToken)
                     .then(apiResponse => {
                         if (apiResponse.error) {
-                            console.log('error hai');
-                            console.log('apiResponse' + apiResponse.message);
+                            //console.log('error hai');
+                            //console.log('apiResponse' + apiResponse.message);
                             throw new Error(apiResponse.message);
                         } else {
-                            console.log('response hai');
-                            console.log('apiResponse' + apiResponse);
+                            //console.log('response hai');
+                            //console.log('apiResponse' + apiResponse);
                         }
                         return apiResponse;
                     }).catch(e => {
-                        console.log('e');
-                        console.log(Object.keys(e));
+                        //console.log('e');
+                        //console.log(Object.keys(e));
                         let error = {
                             error: true,
                             status: 404,
@@ -228,8 +228,8 @@ let signInSocial = (req, res) => {
         }
     };
     let findAndSaveUser = (apiResponse) => {
-        console.log('im inside find and save user')
-        console.log(apiResponse.email)
+        //console.log('im inside find and save user')
+        //console.log(apiResponse.email)
 
         return new Promise((resolve, reject) => {
             UserModel.findOne({ 'email': apiResponse.email }, (err, result) => {
@@ -238,11 +238,11 @@ let signInSocial = (req, res) => {
                     let apiResponse = response.generate(true, 'Unable to find user details ' + err, 400, null);
                     reject(apiResponse);
                 } else if (!result) {
-                    console.log('inside result not found of find user')
-                    console.log('inside ' + apiResponse)
-                    console.log('result')
-                    console.log(result)
-                    console.log('result not found')
+                    //console.log('inside result not found of find user')
+                    //console.log('inside ' + apiResponse)
+                    //console.log('result')
+                    //console.log(result)
+                    //console.log('result not found')
                     let newUser = new UserModel({
                         userId: shortid.generate(),
                         name: apiResponse.name,
@@ -255,7 +255,7 @@ let signInSocial = (req, res) => {
                     });
                     newUser.save((err, newUser) => {
                         if (err) {
-                            //console.log(err)
+                            ////console.log(err)
                             logger.error(err.message, 'userController : findAndSaveUser', 10);
                             reject(true, 'Unable to create new user details', 400, null);
                         } else {
@@ -270,22 +270,22 @@ let signInSocial = (req, res) => {
         });
     }; //end of findAndSaveUser
     let createToken = (result) => {
-        console.log('inside create token method');
-        console.log('result inserted or fetched')
-        console.log(result)
+        //console.log('inside create token method');
+        //console.log('result inserted or fetched')
+        //console.log(result)
 
         //start of generate token
         return new Promise((resolve, reject) => {
             token.generateToken(result, (err, tokenDetails) => {
                 if (err) {
-                    console.log('err');
-                    console.log(err);
+                    //console.log('err');
+                    //console.log(err);
                     reject(response.generate(true, 'Failed To Generate Token', 500, null))
                 } else {
                     tokenDetails.userId = result.userId;
                     tokenDetails.userDetails = result;
-                    console.log('tokenDetails')
-                    console.log(tokenDetails)
+                    //console.log('tokenDetails')
+                    //console.log(tokenDetails)
                     resolve(tokenDetails);
                 }
             })
@@ -293,8 +293,8 @@ let signInSocial = (req, res) => {
     }; //end of createToken method
 
     let saveToken = (tokenDetails) => {
-        console.log('tokenDetails')
-        console.log(tokenDetails);
+        //console.log('tokenDetails')
+        //console.log(tokenDetails);
         return new Promise((resolve, reject) => {
             AuthModel.findOne({ userId: tokenDetails.userId },
                 (err, retrievedTokenDetails) => {
@@ -304,7 +304,7 @@ let signInSocial = (req, res) => {
                             500, null);
                         reject(apiResponse);
                     } else if (check.isEmpty(retrievedTokenDetails)) {
-                        //console.log('empty auth token')
+                        ////console.log('empty auth token')
                         let newAuthToken = new AuthModel({
                             userId: tokenDetails.userId,
                             authToken: tokenDetails.token,
@@ -325,18 +325,18 @@ let signInSocial = (req, res) => {
                             }
                         })
                     } else {
-                        //console.log('already exist auth token')
+                        ////console.log('already exist auth token')
                         retrievedTokenDetails.authToken = tokenDetails.token;
                         retrievedTokenDetails.tokenSecret = tokenDetails.tokenSecret;
                         retrievedTokenDetails.tokenGenerationTime = time.now();
                         retrievedTokenDetails.save((err, newTokenDetails) => {
                             if (err) {
-                                //console.log(err);
+                                ////console.log(err);
                                 logger.error(err.message, 'userController : saveToken', 10)
                                 let apiResponse = response.generate(true, 'Failed to generate token', 500, 10);
                                 reject(apiResponse);
                             } else {
-                                //console.log(newTokenDetails)
+                                ////console.log(newTokenDetails)
                                 let responseBody = {
                                     authToken: newTokenDetails.authToken,
                                     userDetails: tokenDetails.userDetails
@@ -360,8 +360,8 @@ let signInSocial = (req, res) => {
             res.send(apiResponse)
         })
         .catch((err) => {
-            //console.log("errorhandler");
-            //console.log(err);
+            ////console.log("errorhandler");
+            ////console.log(err);
             res.status(err.status)
             res.send(err)
         });
@@ -375,8 +375,8 @@ let signInSocial = (req, res) => {
     //         res.send(apiResponse)
     //     })
     //     .catch((err) => {
-    //         //console.log("errorhandler");
-    //         //console.log(err);
+    //         ////console.log("errorhandler");
+    //         ////console.log(err);
     //         res.status(err.status)
     //         res.send(err)
     //     });
@@ -401,11 +401,11 @@ let getAllUsersFunction = (req, res) => {
         })
 }; //end of getAllUserFunction
 let createIssueFunction = (req, res) => {
-    console.log('req.body')
-    console.log(req.body)
+    //console.log('req.body')
+    //console.log(req.body)
 
-    console.log('req.files')
-    console.log(req.files)
+    //console.log('req.files')
+    //console.log(req.files)
     let checkParameters = (req, res) => {
         return new Promise((resolve, reject) => {
             if (check.isEmpty(req.body.title) || check.isEmpty(req.body.description) || check.isEmpty(req.body.assignee)) {
@@ -413,22 +413,22 @@ let createIssueFunction = (req, res) => {
                 let apiResponse = response.generate(true, '1 or more parameters are missing', 400, null);
                 reject(apiResponse);
             } else {
-                console.log('it is done')
+                //console.log('it is done')
                 resolve(req);
             }
         });
     }; //end of checkParameters
 
     let saveData = (req) => {
-        console.log('req')
-        console.log(req.files)
+        //console.log('req')
+        //console.log(req.files)
         return new Promise((resolve, reject) => {
             let d = [];
             req.files.forEach(element => {
                 d.push(element.filename);
             });
-            console.log('d');
-            console.log(d);
+            //console.log('d');
+            //console.log(d);
             let issueData = new IssueModel({
                 issueId: shortid.generate(),
                 title: req.body.title.trim(),
@@ -440,23 +440,24 @@ let createIssueFunction = (req, res) => {
                 createdOn: time.getLocalTime(),
                 lastModifiedOn: time.getLocalTime()
             });
-            console.log('issueData')
-            console.log(issueData)
+            //console.log('issueData')
+            //console.log(issueData)
 
             //save to db
-            issueData.save((err, generatedToDoItem) => {
+            issueData.save((err, generatedIssue) => {
                 if (err) {
-                    //console.log(err)
+                    ////console.log(err)
                     logger.error(err.message, 'userController:createIssueFunction=>saveData', 10);
                     let apiResponse = response.generate(true, 'Unable to create new issue', 400, null);
                     reject(apiResponse);
                 } else {
-                    let generatedToDoItemObject = generatedToDoItem.toObject();
-                    resolve(generatedToDoItemObject);
+                    let generatedIssueObject = generatedIssue.toObject();
+                    resolve(generatedIssueObject);
                 }
             });
         });
     }; //end of saveData
+    
     checkParameters(req, res)
         .then(saveData)
         .then((resolve) => {
@@ -472,7 +473,7 @@ let createIssueFunction = (req, res) => {
 }; //end of create issue function
 
 let getAllReq = (req, res) => {
-    console.log(req.body);
+    //console.log(req.body);
     let perPage = req.body.length;
     let page = req.body.length * req.body.start;
     // creating find query.
@@ -493,14 +494,14 @@ let getAllReq = (req, res) => {
         orderColumn = 'status'
     }
 
-    console.log('populate')
-    console.log(populate)
+    //console.log('populate')
+    //console.log(populate)
     if (orderColumn != 1) {
         sort = {
             [orderColumn]: dir
         };
     }
-    console.log(sort);
+    //console.log(sort);
     if (!check.isEmpty(req.body.search.value)) {
         findQuery = {
             $or: [
@@ -530,7 +531,7 @@ let getAllReq = (req, res) => {
                         recordsFiltered: count,
                         data: result
                     };
-                    console.log(objToSend)
+                    //console.log(objToSend)
                     res.status(200);
                     res.send(objToSend);
                 }
@@ -538,11 +539,11 @@ let getAllReq = (req, res) => {
     })
 }; //end of getAllUserFunction
 let register = (req, res) => {
-    console.log('req.body')
-    console.log(req.body)
+    //console.log('req.body')
+    //console.log(req.body)
 
     var env = process.env.NODE_ENV || 'dev';
-    console.log('\n\n\n\n\n\n\n\n' + env);
+    //console.log('\n\n\n\n\n\n\n\n' + env);
     let checkParameters = (req, res) => {
         return new Promise((resolve, reject) => {
             if (check.isEmpty(req.body.name) || check.isEmpty(req.body.email) || check.isEmpty(req.body.password)) {
@@ -569,14 +570,14 @@ let register = (req, res) => {
     }; //end of checkParameters
 
     let saveData = () => {
-        console.log('req')
-        console.log(req.file)
+        //console.log('req')
+        //console.log(req.file)
 
-        console.log(shortid.generate())
-        console.log(titleCase(req.body.name.trim()))
-        console.log(req.body.email.trim().toLowerCase())
-        console.log(passwordLib.hashpassword(req.body.password))
-        console.log(req.file.filename)
+        //console.log(shortid.generate())
+        //console.log(titleCase(req.body.name.trim()))
+        //console.log(req.body.email.trim().toLowerCase())
+        //console.log(passwordLib.hashpassword(req.body.password))
+        //console.log(req.file.filename)
         return new Promise((resolve, reject) => {
 
             let dirName = path.join(__dirname, '../../uploads')
@@ -591,20 +592,20 @@ let register = (req, res) => {
                 photoUrl: req.file.filename,
                 createdOn: time.getLocalTime()
             });
-            console.log('user')
-            console.log(user)
+            //console.log('user')
+            //console.log(user)
 
             //save to db
             user.save((err, result) => {
                 if (err) {
-                    //console.log(err)
+                    ////console.log(err)
                     logger.error(err.message, 'userController:register=>saveData', 10);
                     let apiResponse = response.generate(true, 'Unable to register user', 400, null);
                     reject(apiResponse);
                 } else {
                     let userCreated = result.toObject();
-                    console.log('userCreated')
-                    console.log(userCreated)
+                    //console.log('userCreated')
+                    //console.log(userCreated)
                     resolve(userCreated);
                 }
             });

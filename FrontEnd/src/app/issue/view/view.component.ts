@@ -4,12 +4,13 @@ import { UserService } from 'src/app/_services/user.service';
 import { AuthenticationService } from 'src/app/_services/authentication.service';
 import { ToastrService } from 'ngx-toastr';
 import { CreateIssue } from 'src/app/_models/create-issue';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { IssueService } from 'src/app/_services/issue.service';
 
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import { FileUploader } from 'ng2-file-upload';
 import { NgForm } from '@angular/forms';
+import { SocketService } from 'src/app/_services/socket.service';
 
 @Component({
   selector: 'app-view',
@@ -24,11 +25,7 @@ export class ViewComponent implements OnInit {
   hasBaseDropZoneOver = false;
   baseUrl = 'http://localhost:3000/api/v1/';
   @ViewChild('updateForm') updateForm: NgForm;
-
-  constructor(private route: ActivatedRoute, private modalService: BsModalService, private cd: ChangeDetectorRef,
-    private issueService: IssueService, private spinner: NgxSpinnerService, private el: ElementRef,
-    private userService: UserService, private authService: AuthenticationService, private toastr: ToastrService) { }
-
+  navigationSubscription;
   issue: CreateIssue;
   currentUser: any;
   allUsers: any = [];
@@ -38,7 +35,8 @@ export class ViewComponent implements OnInit {
   photo: any;
   attachment: any = [];
   status: any = ['In-Progress', 'In-Test', 'Done', 'Pending', 'Completed', 'Backlog'];
-  currentIssueId: string;
+  currentIssueId: string; //to hold current issue id from route
+  currentAssignee: string; //to hold current assignee
   authToken: string;
   comments = [];
   watchers = [];
@@ -48,6 +46,47 @@ export class ViewComponent implements OnInit {
   public pageValue: number = 0;
   public loadingPreviousChat: boolean = false;
 
+  constructor(private route: ActivatedRoute, private router: Router, private socket: SocketService, private modalService: BsModalService, private cd: ChangeDetectorRef,
+    private issueService: IssueService, private spinner: NgxSpinnerService, private el: ElementRef,
+    private userService: UserService, private authService: AuthenticationService, private toastr: ToastrService) {
+
+  }
+
+  ngOnInit() {
+    this.issue = {
+      title: '',
+      description: '',
+      attachment: '',
+      assignee: ''
+    };
+    this.currentIssueId = this.route.snapshot.paramMap.get("issueId");
+
+    this.authService.currentUser.subscribe(user => {
+      console.log('user')
+      console.log(user)
+      this.currentUser = user;
+      this.authToken = this.currentUser.authToken;
+    });
+    this.initialiseInvites();
+
+  }
+
+  initialiseInvites() {
+    console.log('hiiii')
+    this.initializeUploader();
+    this.getIssue(this.currentIssueId);
+    this.getComment();
+    this.getAllUsers();
+    this.getWatchers();
+  }
+  ngOnDestroy() {
+    // avoid memory leaks here by cleaning up after ourselves. If we  
+    // don't then we will continue to run our initialiseInvites()   
+    // method on every navigationEnd event.
+    if (this.navigationSubscription) {
+      this.navigationSubscription.unsubscribe();
+    }
+  }
   openModal(photo: string, template: TemplateRef<any>) {
     this.photo = 'http://localhost:3000/' + photo;
     this.modalRef = this.modalService.show(template);
@@ -57,44 +96,21 @@ export class ViewComponent implements OnInit {
     this.modalAttachment = this.modalService.show(template, { class: 'modal-lg' });
   }
 
-  openConfirmModal(photo:string, template:TemplateRef<any>){
+  openConfirmModal(photo: string, template: TemplateRef<any>) {
     this.photo = photo;
-    this.confirmModal = this.modalService.show(template, {class: 'modal-sm'});
+    this.confirmModal = this.modalService.show(template, { class: 'modal-sm' });
   }
   confirm(): void {
     this.deletePhoto(this.photo);
     this.confirmModal.hide();
   }
- 
+
   decline(): void {
     this.confirmModal.hide();
   }
   // ngAfterContentInit() {
   //   this.cd.detectChanges();
   // }
-  ngOnInit() {
-    this.currentIssueId = this.route.snapshot.paramMap.get("issueId");
-    this.issue = {
-      title: '',
-      description: '',
-      attachment: '',
-      assignee: ''
-    };
-
-    this.authService.currentUser.subscribe(user => {
-      console.log('user')
-      console.log(user)
-      this.currentUser = user;
-      this.authToken = this.currentUser.authToken;
-    });
-
-    this.initializeUploader();
-    this.getIssue(this.currentIssueId);
-    this.getComment();
-    this.getAllUsers();
-    this.getWatchers();
-  }
-
   //file upload code
 
   fileOverBase(e: any): void {
@@ -123,13 +139,13 @@ export class ViewComponent implements OnInit {
       console.log(item);
       if (response) {
         const res = JSON.parse(response);
-        
+
         this.attachment = res.data.attachment;
-        
+
         // this.lgModal = this.modalService.hide(10);
       }
     };
-    this.uploader.onCompleteAll = () =>{
+    this.uploader.onCompleteAll = () => {
       this.toastr.success('File Uploaded Successfully')
       this.modalAttachment.hide();
     };
@@ -241,6 +257,10 @@ export class ViewComponent implements OnInit {
           this.commentDescription = '';
 
           this.toastr.success(resp.message);
+
+          objpost["title"] = this.issue.title;
+          //brodcast comment
+          this.broadCastComment(objpost);
         }
         else
           this.toastr.error(resp.message);
@@ -276,7 +296,7 @@ export class ViewComponent implements OnInit {
             assignee: resp.data.assignedTo._id,
             status: resp.data.status
           };
-
+          this.currentAssignee = resp.data.assignedTo._id;
           //set local property attachment to the response's data-attachment
           this.attachment = resp.data.attachment;
         } else {
@@ -347,34 +367,80 @@ export class ViewComponent implements OnInit {
 
   //on click of update information button
   updateInformation() {
-    this.openSpinner(true);
+    //to check if descritpion is empty or not
+    if (this.issue.description.trim() === "") {
+      this.toastr.error('Please fill description of the issue');
+    }
+    else {
+      this.openSpinner(true);
 
-    let dataObj = {
-      title: this.issue.title,
-      description: this.issue.description,
-      assignedTo: this.issue.assignee,
-      status: this.issue.status,
-      issueId: this.currentIssueId,
-      authToken: this.authToken,
-      modifiedBy: this.currentUser.userDetails._id
-    };
-    this.issueService.updateIssue(dataObj).subscribe((res) => {
-      if (res.status === 200) {
-         console.log(res)
-         this.toastr.success(res.message);
-        // this.issue = {
-        //   title: '',
-        //   description: '',
-        //   attachment: '',
-        //   assignee: ''
-        // };
-        this.updateForm.reset(this.issue);
-      } else {
-        this.toastr.warning(res.message);
-      }
-    }, (err) => {
-      this.toastr.error(err);
-    });
-    this.openSpinner(false);
+      let dataObj = {
+        title: this.issue.title,
+        description: this.issue.description,
+        assignedTo: this.issue.assignee,
+        status: this.issue.status,
+        issueId: this.currentIssueId,
+        authToken: this.authToken,
+        modifiedBy: this.currentUser.userDetails._id
+      };
+      this.issueService.updateIssue(dataObj).subscribe((res) => {
+        if (res.status === 200) {
+          console.log(res)
+          this.toastr.success(res.message);
+          //resetting form to default state
+          this.updateForm.reset(this.issue);
+
+          if (this.issue.assignee === this.currentAssignee) {
+            this.broadCastNotification(res.data);
+          } else {
+            let data = this.watchers.find(x => x.watcherId._id === this.currentAssignee);
+            if (data) {
+              this.broadCastNotification(res.data);
+            } else {
+              let toUnsubscribeNotification = {
+                issueId: this.currentIssueId,
+                userId: this.currentAssignee,
+                title: this.issue.title
+              };
+              this.updateWatcherList(toUnsubscribeNotification), (res) => {
+                this.broadCastNotification(res.data);
+              };
+            }
+          }
+
+        } else {
+          this.toastr.warning(res.message);
+        }
+      }, (err) => {
+        this.toastr.error(err);
+      });
+      this.openSpinner(false);
+    }
   }
+
+  /*
+      methods realted to socket
+  */
+  //method call once data is updated
+
+  updateWatcherList = (data) => {
+    this.socket.updateSubsrcibeUsers(data);
+  };
+  broadCastNotification = (data) => {
+    console.log('data form broadcast\n\n')
+    console.log(data)
+    console.log('brodcastNotfication data')
+    this.socket.updateIssueNotification(data);
+    console.log(data)
+  };//end of broadCastNotificcation
+
+
+  //method invoked, once comment is posted
+  broadCastComment = (commentData) => {
+    this.socket.commentNotification(commentData);
+  };//end of broadCast Comment
+
+  /**
+   *  end of socket methods
+   */
 }

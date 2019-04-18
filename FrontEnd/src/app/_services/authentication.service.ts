@@ -15,10 +15,6 @@ export class AuthenticationService {
 
   private url = environment.baseUrl + "api/v1";
   userName: string;
-
-  //private currentUserSubject: BehaviorSubject<any>;
-  //public currentUser: Observable<any>;
-
   currentData: any;
   currentUserSubject = new BehaviorSubject<any>(JSON.parse(localStorage.getItem('userData')));
   currentUser = this.currentUserSubject.asObservable();
@@ -33,23 +29,6 @@ export class AuthenticationService {
   changeUserData(photoUrl: string) {
     this.currentUserSubject.next(photoUrl);
   }
-  // login(data): Observable<any> {
-  //   const params = new HttpParams()
-  //     .set('email', data.email)
-  //     .set('password', data.password);
-  //   return this.httpClient.post(`${this.url}/login`, params)
-  //   .pipe(map(user => {
-  //     if (user && user.data.authToken) {
-  //       console.log('user.data.authToken')
-  //       console.log(user.data.authToken)
-
-  //       // store user details and jwt token in local storage to keep user logged in between page refreshes
-  //       localStorage.setItem('currentUser', JSON.stringify(user));
-  //       this.currentUserSubject.next(user);
-  //     }
-  //     return user;
-  //   }));
-  // }
   signInSocial(p): Observable<any> {
     var httpParams = new HttpParams()
       .set('type', p.type)

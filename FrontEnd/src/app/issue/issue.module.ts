@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { CreateComponent } from './create/create.component';
 import { FormsModule } from '@angular/forms';
 import { NgxSpinnerModule } from 'ngx-spinner';
-import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
+
 import { LayoutModule } from '../layout/layout.module';
 import { MyListComponent } from './my-list/my-list.component';
 
@@ -12,10 +12,16 @@ import { ViewComponent } from './view/view.component';
 
 import { ModalModule } from 'ngx-bootstrap';
 import { FileUploadModule } from 'ng2-file-upload';
+import { EditorModule } from '@tinymce/tinymce-angular';
+
 @NgModule({
   declarations: [CreateComponent, MyListComponent, ViewComponent],
-  imports: [ LayoutModule,DataTablesModule, ModalModule.forRoot(), FileUploadModule,
-    CommonModule, FormsModule, FroalaEditorModule.forRoot(), FroalaViewModule.forRoot(),NgxSpinnerModule
+  imports: [LayoutModule, DataTablesModule, ModalModule.forRoot(), FileUploadModule,
+    CommonModule, FormsModule, EditorModule,
+    //FroalaEditorModule.forRoot(), FroalaViewModule.forRoot(),
+    NgxSpinnerModule
   ]
 })
-export class IssueModule { }
+export class IssueModule {
+
+}

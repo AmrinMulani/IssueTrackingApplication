@@ -7,6 +7,7 @@ import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { environment } from 'src/environments/environment';
 import { SocketService } from 'src/app/_services/socket.service';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-nav',
@@ -29,7 +30,6 @@ export class NavComponent implements OnInit, OnDestroy {
     private router: Router) {
   }
   ngOnInit() {
-
 
     this.socketService.disconnectedSocket();
 
@@ -66,12 +66,53 @@ export class NavComponent implements OnInit, OnDestroy {
   protected getBroadCast: any = () => {
     this.socketService.registerForNotification()
       .subscribe((data) => {
-        console.log(data)
         console.log('inside getBroadCast updated')
-        this.toastr.success(`${data}`);
-      }); //end of subscribe
+        console.log(data)
+
+
+        this.toastr.success('Changes in issue ' + data.title + ' (' + data.issueId + ') Click to follow', '', {
+          disableTimeOut: true,
+          closeButton: true
+        })
+          .onTap
+          .subscribe(() => this.toasterClickedHandler(data.issueId));
+
+      }); //end of register for notifications subscribe
+
+    this.socketService.registerForCommentNotification()
+      .subscribe((data) => {
+        this.toastr.success('Issue ' + data.title + ' (' + data.issueId + ') received a comment. Click to follow', '', {
+          disableTimeOut: true,
+          closeButton: true
+        })
+          .onTap
+          .subscribe(() => this.toasterClickedHandler(data.issueId));
+      });
+    this.socketService.registerForNewIssueCreated()
+      .subscribe((data) => {
+        this.toastr.success('A new issue has been assigned to you. (' + data.issueId + '). Click to follow', '', {
+          disableTimeOut: true,
+          closeButton: true
+        })
+          .onTap
+          .subscribe(() => this.toasterClickedHandler(data.issueId));
+      });
+    this.socketService.registerForUserUpdatedNotifications()
+      .subscribe((data) => {
+        this.toastr.success('Issue ' + data.title + ' (' + data.issueId + ') is updated. Click to follow', '', {
+          disableTimeOut: true,
+          closeButton: true
+        })
+          .onTap
+          .subscribe(() => this.toasterClickedHandler(data.issueId));
+      });
   } //end get message from a user
 
+  toasterClickedHandler(data) {
+    console.log('click event handled')
+    this.router.navigate(['/view/' + data]);
+
+  }
   loggedIn() {
     return this.authService.loggedIn();
   }

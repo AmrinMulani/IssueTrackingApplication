@@ -58,6 +58,7 @@ export class IssueService {
       .set('title', data.title)
       .set('description', data.description)
       .set('assignedTo', data.assignedTo)
+      
       .set('status', data.status)
       .set('modifiedBy', data.modifiedBy)
       .set('authToken', data.authToken);

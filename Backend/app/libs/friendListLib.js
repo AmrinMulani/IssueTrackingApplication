@@ -34,22 +34,12 @@ let getAllFriendsId = (id, cb) => {
                     result.forEach(d => {
                         issueData.push(d.issueId);
                     });
-                    console.log('\n\n\n\n\n\n\n\n\nissueData');
-                    console.log(issueData);
 
                     watch.forEach(d => {
                         issueData.push(d.issueId);
                     })
 
-                    console.log('\n\n\n\n\n\n\n\n\nissueData');
-                    console.log(issueData);
-
-
                     let unique = [...new Set(issueData)];
-
-                    console.log('\n\n\n\n\n\n\n\n\nunique');
-                    console.log(unique);
-
                     cb(null, unique);
                 });
         });

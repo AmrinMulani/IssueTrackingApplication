@@ -7,6 +7,7 @@ import { UserService } from 'src/app/_services/user.service';
 import { ToastrService } from 'ngx-toastr';
 import { AuthenticationService } from 'src/app/_services/authentication.service';
 import { NgForm } from '@angular/forms';
+import { SocketService } from 'src/app/_services/socket.service';
 @Component({
   selector: 'app-create',
   templateUrl: './create.component.html',
@@ -15,7 +16,7 @@ import { NgForm } from '@angular/forms';
 export class CreateComponent implements OnInit {
 
   @ViewChild('createForm') createForm: NgForm;
-  constructor(private spinner: NgxSpinnerService, private el: ElementRef,
+  constructor(private spinner: NgxSpinnerService, private el: ElementRef, private socket: SocketService,
     private userService: UserService, private authService: AuthenticationService, private toastr: ToastrService) { }
   issue: CreateIssue;
   currentUser: any;
@@ -36,14 +37,6 @@ export class CreateComponent implements OnInit {
     this.getAllUsers();
     this.openSpinner(false)
   }
-  public options: Object = {
-    height: 200,
-    charCounterCount: false,
-    toolbarButtons: ['bold', 'italic', 'underline', 'paragraphFormat', 'fontFamily'],
-    toolbarButtonsXS: ['bold', 'italic', 'underline', 'paragraphFormat', 'fontFamily'],
-    toolbarButtonsSM: ['bold', 'italic', 'underline', 'paragraphFormat', 'fontFamily'],
-    toolbarButtonsMD: ['bold', 'italic', 'underline', 'paragraphFormat', 'fontFamily']
-  };
   openSpinner = (isLoading: boolean) => {
     if (isLoading)
       this.spinner.show();
@@ -67,46 +60,68 @@ export class CreateComponent implements OnInit {
     );
   }
   saveData = () => {
-    this.openSpinner(true);
-    let formData = new FormData();
-
-    //locate the file element meant for the file upload.
-    let inputEl: HTMLInputElement = this.el.nativeElement.querySelector('#attachment');
-    //get the total amount of files attached to the file input.
-    let fileCount: number = inputEl.files.length;
-    //check if the filecount is greater than zero, to be sure a file was selected.
-    if (fileCount > 0) { // a file was selected
-      //append the key name 'photo' with the first file in the element
-
-      for (let i = 0; i < fileCount; i++) {
-        formData.append('photos', inputEl.files.item(i));
-      }
-
+    console.log(this.issue)
+    if (this.issue.description.trim() === "") {
+      this.toastr.error('Description is empty, Please give a description of the issue')
     }
-    console.log(inputEl.files.item(0))
+    else {
+      this.openSpinner(true);
+      let formData = new FormData();
 
-    formData.append('title', this.issue.title);
-    formData.append('description', this.issue.description);
-    formData.append('assignee', this.issue.assignee);
-    formData.append('createdBy', this.currentUser.userDetails._id);
+      //locate the file element meant for the file upload.
+      let inputEl: HTMLInputElement = this.el.nativeElement.querySelector('#attachment');
+      //get the total amount of files attached to the file input.
+      let fileCount: number = inputEl.files.length;
+      //check if the filecount is greater than zero, to be sure a file was selected.
+      if (fileCount > 0) { // a file was selected
+        //append the key name 'photo' with the first file in the element
 
-    this.userService.createIssue(formData).subscribe((res) => {
-      if (res.status === 200) {
-        console.log(res)
-        this.toastr.success('Data Saved Successfully!!');
-        this.issue = {
-          title: '',
-          description: '',
-          attachment: '',
-          assignee: ''
-        };
-        this.createForm.reset(this.issue);
-      } else {
-        this.toastr.warning(res.message);
+        for (let i = 0; i < fileCount; i++) {
+          formData.append('photos', inputEl.files.item(i));
+        }
       }
-    }, (err) => {
-      this.toastr.error(err);
-    });
-    this.openSpinner(false);
+      console.log(inputEl.files.item(0))
+
+      formData.append('title', this.issue.title);
+      formData.append('description', this.issue.description);
+      formData.append('assignee', this.issue.assignee);
+      formData.append('createdBy', this.currentUser.userDetails._id);
+
+      this.userService.createIssue(formData).subscribe((res) => {
+        if (res.status === 200) {
+          console.log(res)
+
+          let brodCastObject = {
+            issueId: res.data.issueId,
+            assignee: res.data.assignedTo,
+            createdBy: res.data.createdBy
+          };
+          this.BroadcastMessage(brodCastObject);
+          this.toastr.success('Data Saved Successfully!!');
+          this.issue = {
+            title: '',
+            description: '',
+            attachment: '',
+            assignee: ''
+          };
+          this.createForm.reset(this.issue);
+        } else {
+          this.toastr.warning(res.message);
+        }
+        this.openSpinner(false);
+      }, (err) => {
+        this.toastr.error(err);
+        this.openSpinner(false);
+      });
+    }
   }
+
+  BroadcastMessage = (data) => {
+    console.log('data form broadcast\n\n')
+    console.log(data)
+    console.log('brodcastNotfication data')
+    this.socket.notifyAssignee(data);
+    console.log(data)
+  };//end of broadCastNotificcation
+
 }

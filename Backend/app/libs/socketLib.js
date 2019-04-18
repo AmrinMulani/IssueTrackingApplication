@@ -33,126 +33,218 @@ let setServer = (server) => {
         rooms = [];
         console.log("on connection emitting verify user");
         socket.emit("verifyUser", "verifying user");
-        console.log('socket.userId')
-        console.log(socket.userId)
 
         //code to verify the user and make him online
         socket.on('set-user', (authToken) => {
-                console.log("set-user called")
-                tokenLib.verifyClaimWithoutSecret(authToken, (err, user) => {
-                    if (err) {
-                        socket.emit('auth-error', {
-                            status: 500,
-                            error: 'Please provide valid auth token'
-                        })
-                    } else {
-                        console.log('user is verified, setting details');
-                        let currentUser = user.data;
-                        console.log('\n\n\n\n\n\ncurrentUser');
-                        console.log(currentUser);
-                        //setting socket user id
+            console.log("set-user called")
+            tokenLib.verifyClaimWithoutSecret(authToken, (err, user) => {
+                if (err) {
+                    socket.emit('auth-error', {
+                        status: 500,
+                        error: 'Please provide valid auth token'
+                    })
+                } else {
+                    console.log('user is verified, setting details');
+                    let currentUser = user.data;
+                    console.log('\n\n\n\n\n\ncurrentUser');
+                    console.log(currentUser);
+                    //setting socket user id
 
-                        socket.userId = currentUser.userId
+                    socket.userId = currentUser._id;
 
+                    friendLib.getAllFriendsId(currentUser._id, (err, result) => {
+                        if (err) {
+                            socket.emit('auth-error', {
+                                status: 500,
+                                error: 'Please provide valid auth token'
+                            })
+                        } else {
+                            console.log('result ' + currentUser.name)
+                            console.log(result)
+                            result.forEach(element => {
+                                let room = '';
+                                // currentUser._id === element.userId._id ? room = element.sentTo._id + 'Room' : room = element.userId._id + 'Room'
+                                room = element + 'Room';
+                                var index = rooms.indexOf(room);
+                                if (index < 0)
+                                    rooms.push(room)
+                            });
+                            // console.log('\n\n\n\n\ntotal rooms')
+                            // console.log(rooms)
+                            rooms.forEach(e => {
+                                let key = e;
+                                userId = currentUser._id;
+                                socketId = socket.id;
+                                let d = [];
 
-                        //let key = currentUser.userId;
-                        // let key = currentUser._id + "Room";
+                                let value = {
+                                    userId: userId,
+                                    socketId: socketId
+                                };
+                                d.push(value);
 
-                        // if (rooms.indexOf(key) < 0)
-                        //     rooms.push(key)
+                                // redisLib.getASingleDataFromHash("roomDa", key, (err, response) => {
+                                //     if (err) {
+                                //         console.log(err + "some error occurred")
+                                //     } else if (!response) {
+                                //         redisLib.setANewOnlineUserInHash("roomDa", key, JSON.stringify(d),
+                                //             (error, result) => {
+                                //                 if (error)
+                                //                     console.log("some error occurred while saving user to hash " + err)
+                                //                 else {
+                                //                     console.log('socketLib user inserted in hash ' + result);
+                                //                 }
+                                //             })
+                                //     } else {
+                                //         let oldValues = JSON.parse(response);
+                                //         // console.log('socket lib ln 107')
+                                //         // console.log(oldValues)
+                                //         let findData = oldValues.find(x => x.userId === userId)
+                                //         if (!findData) {
+                                //             oldValues.push(value);
+                                //             redisLib.setANewOnlineUserInHash("roomDa", key, JSON.stringify(oldValues),
+                                //                 (er, res) => {
+                                //                     if (er)
+                                //                         console.log("some error occurred while saving user to hash " + err)
+                                //                     else {
+                                //                         // console.log('socketLib user inserted in hash ' + res);
+                                //                     }
+                                //                 })
+                                //         } else {
 
+                                //         }
+                                //     }
+                                // })
+                            });
 
-                        friendLib.getAllFriendsId(currentUser._id, (err, result) => {
-                            if (err) {
-                                socket.emit('auth-error', {
-                                    status: 500,
-                                    error: 'Please provide valid auth token'
-                                })
-                            } else {
-                                console.log('result')
-                                console.log(result)
-
-                                result.forEach(element => {
-                                    let room = '';
-                                    // currentUser._id === element.userId._id ? room = element.sentTo._id + 'Room' : room = element.userId._id + 'Room'
-
-                                    room = element + 'Room';
-
-                                    var index = rooms.indexOf(room);
-                                    if (index < 0)
-                                        rooms.push(room)
-                                        // socket.room = key;
-                                        // socket.join(room);
-                                });
-                                createRoom();
+                            // // socket.room = key;
+                            // // socket.join(room);
+                            createRoom().then((resolve) => {
+                                // redisLib.getAllUsersInAHash("roomDa", (err, result) => {
+                                //     console.log('All users in hash')
+                                //     console.log(result)
+                                // })
+                                debugger;
+                                socketssss = myIo;
+                                //  d=[];
+                                // sockets = myIo.in('dlx_cQZ6nRoom');
+                                // Object.keys(sockets.sockets).forEach((item) => {
+                                //     d.push(sockets.sockets[item])
+                                //     console.log("TODO: Item:", sockets.sockets[item].userId)
+                                // })
+                                // sockets = myIo.in("dlx_cQZ6nRoom")
+                                // Object.keys(sockets.sockets).forEach((item) => {
+                                //     console.log("TODO: Item:", sockets.sockets[item].userId)
+                                // })
+                            })
+                        }
+                    });
+                    createRoom = () => {
+                        return new Promise((resolve, reject) => {
+                            for (room in rooms) {
+                                socket.userId = currentUser._id;
+                                socket.room = rooms[room];
+                                socket.join(rooms[room])
                             }
+                            resolve();
                         });
-
-                        createRoom = () => {
-                                console.log('inside rooms array')
-                                console.log(rooms)
-                                for (room in rooms) {
-                                    socket.room = rooms[room];
-                                    socket.join(rooms[room])
-                                }
-                                setTimeout(function() {
-                                    console.log('socket room')
-                                    console.log(socket.rooms)
-                                }, 2000)
-                            }
-                            // socket.to(socket.room)
-                            //     .broadcast.emit('online-user-list', result);
                     }
-                })
-            }) // end of listening set-user event
+                }
+            })
+        }) // end of listening set-user event
 
         socket.on('disconnect', () => {
-                console.log('user is disconnected');
-                console.log(socket.userId);
-                var removeIndex = allUsers.map(function(item) {
-                    return item.userId;
-                }).indexOf(socket.userId);
+            console.log('user is disconnected');
+            console.log(socket.userId);
+            if (socket.userId) {
+                socket.leaveAll();
+            }
+        }) //end of on disconnect
 
-                var remIndex = allUsers.indexOf(socket.userId)
-                console.log('removeIndex')
-                console.log(remIndex)
+        //once a new issue is created and send toast to assignee
+        socket.on('notify-assignee', (newIssueData) => {
+            debugger;
 
-                allUsers.splice(remIndex, 1);
-                console.log('allUsers');
-                console.log(allUsers);
-                if (socket.userId) {
-                    socket.leaveAll();
-                    //socket.leave(socket.room);
-                    //socket.to(socket.room).broadcast.emit('online-user-list', result);
+            let roomName = newIssueData.issueId + 'Room';
+            assignee = newIssueData.assignee;
+
+            socket.userId = newIssueData.createdBy;
+            socket.room = roomName;
+            socket.join(roomName);
+
+            let allConnectedSockets = myIo.connected;
+            let assigneeSocket = '';
+            Object.keys(allConnectedSockets).forEach(e => {
+                if (allConnectedSockets[e].userId === assignee) {
+                    assigneeSocket = allConnectedSockets[e];
                 }
+            })
+            if (!check.isEmpty(assigneeSocket)) {
+                assigneeSocket.join(roomName);
+            }
 
+            let assdsss = myIo;
+            dataObj = {
+                issueId: newIssueData.issueId
+            }
 
+            socket.to(roomName)
+                .broadcast.emit('new-issue-created', dataObj);
 
-            }) //end of on disconnect
+        });
 
-        // socket.on('send-request', (data) => {
-        //     // console.log('SEND-REQUEST DATA')
-        //     // console.log(data)
-        //     // console.log('socket.room DATA')
+        //once a issue is upadted and there's change in watcher
+        socket.on('update-user', (data) => {
+            let roomName = data.issueId + 'Room';
+            let userId = data.userId;
 
-        //     let roomName = data.createdBy + 'Room';
-        //     console.log('roomName')
-        //     console.log(roomName)
-
-        //     // socket.to(`'${roomName}'`)
-        //     // socket.to(roomName)
-
-        //     // var clients = myIo.clients(roomName); // all users from room `room`
-        //     // console.log('clients')
-        //     // console.log(clients)
-
-        //     // io.of('/chat').clients((error, clients) => {
-        //     //     if (error) throw error;
-        //     //     console.log(clients); // => [PZDoMHjiu8PYfRiKAAAF, Anw2LatarvGVVXEIAAAD]
-        //     // });
-        //     socket.to(roomName)
-        //         .broadcast.emit('multi-todo-transaction', data.remarks);
-        // })
+            debugger;
+            d = [];
+            sockets = myIo.in(roomName);
+            Object.keys(sockets.sockets).forEach((item) => {
+                d.push(sockets.sockets[item])
+                console.log("TODO: Item:", sockets.sockets[item].userId)
+            })
+            socketToRemove = '';
+            d.forEach(e => {
+                if (e.userId === userId) {
+                    socketToRemove = e;
+                }
+            })
+            if (!check.isEmpty(socketToRemove)) {
+                socketToRemove.leave(roomName);
+            }
+            let dataObj = {
+                issueId: data.issueId,
+                title: data.title
+            };
+            socket.to(roomName)
+                .broadcast.emit('user-updated-data', dataObj);
+        })
+        //once issue is updated
+        socket.on('update-issue', (data) => {
+            let roomName = data.issueId + 'Room';
+            console.log('roomName')
+            console.log(roomName)
+            let dataObj = {
+                issueId: data.issueId,
+                title: data.title
+            };
+            socket.to(roomName)
+                .broadcast.emit('issue-updated-data', dataObj);
+        })
+        //once receive a comment
+        socket.on('comment-post', (data) => {
+            let roomName = data.issueId + 'Room';
+            console.log('roomName')
+            console.log(roomName)
+            let dataObj = {
+                issueId: data.issueId,
+                title: data.title,
+            };
+            socket.to(roomName)
+                .broadcast.emit('comment-posted-notification', dataObj);
+        })
         // socket.on('friend-request', (data) => {
         //     console.log("socket friend-request called")
         //     let newData = {

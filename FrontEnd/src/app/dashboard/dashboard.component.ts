@@ -39,6 +39,7 @@ export class DashboardComponent implements OnInit {
       lengthMenu: [10, 25, 50, 100],
       serverSide: true,
       processing: true,
+      autoWidth: false,
       language: {
         processing: '<i class="fa fa-spinner fa-spin fa-fw text-primary"></i><span class="sr-only">Loading...</span>'
       },

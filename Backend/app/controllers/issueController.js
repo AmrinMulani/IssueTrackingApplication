@@ -52,7 +52,7 @@ let getIssuesReporterWise = (req, res) => {
             [orderColumn]: dir
         };
     }
-    console.log(sort);
+    //console.log(sort);
     if (!check.isEmpty(req.body.search.value)) {
         findQuery = {
             $and: [
@@ -65,8 +65,8 @@ let getIssuesReporterWise = (req, res) => {
         };
     }
 
-    console.log('findQuery')
-    console.log(findQuery)
+    //console.log('findQuery')
+    //console.log(findQuery)
     IssueModel.count(findQuery, (err, count) => {
         IssueModel.find(findQuery)
             .select('issueId status title createdBy createdOn')
@@ -87,7 +87,7 @@ let getIssuesReporterWise = (req, res) => {
                         recordsFiltered: count,
                         data: result
                     };
-                    console.log(objToSend)
+                    //console.log(objToSend)
                     res.status(200);
                     res.send(objToSend);
                 }
@@ -172,7 +172,7 @@ let deletePhoto = (req, res) => {
                     } else {
                         let attachments = result.attachment;
                         let index = attachments.findIndex(x => x == req.query.photo);
-                        console.log('\n\n\n\n\n\n\n\n\n\n\n\n' + index)
+                        //console.log('\n\n\n\n\n\n\n\n\n\n\n\n' + index)
                         attachments.splice(index, 1);
 
                         result.markModified('attachment');
@@ -211,10 +211,10 @@ let deletePhoto = (req, res) => {
 
 //uploadPhotoFunction
 let uploadPhotoFunction = (req, res) => {
-    console.log('req.body')
-    console.log(req.body)
-    console.log('req.file')
-    console.log(req.file)
+    // console.log('req.body')
+    // console.log(req.body)
+    // console.log('req.file')
+    // console.log(req.file)
 
     let validateParameters = () => {
         return new Promise((resolve, reject) => {
