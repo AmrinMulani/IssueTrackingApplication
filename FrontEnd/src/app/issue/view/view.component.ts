@@ -11,6 +11,7 @@ import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import { FileUploader } from 'ng2-file-upload';
 import { NgForm } from '@angular/forms';
 import { SocketService } from 'src/app/_services/socket.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-view',
@@ -45,6 +46,7 @@ export class ViewComponent implements OnInit {
   public scrollToCommentTop: boolean = false;
   public pageValue: number = 0;
   public loadingPreviousChat: boolean = false;
+  photoUrl = '';
 
   constructor(private route: ActivatedRoute, private router: Router, private socket: SocketService, private modalService: BsModalService, private cd: ChangeDetectorRef,
     private issueService: IssueService, private spinner: NgxSpinnerService, private el: ElementRef,
@@ -53,6 +55,7 @@ export class ViewComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.photoUrl = environment.baseUrl;
     this.issue = {
       title: '',
       description: '',
@@ -88,7 +91,7 @@ export class ViewComponent implements OnInit {
     }
   }
   openModal(photo: string, template: TemplateRef<any>) {
-    this.photo = 'http://localhost:3000/' + photo;
+    this.photo = `${environment.baseUrl}photo`;
     this.modalRef = this.modalService.show(template);
   }
 
