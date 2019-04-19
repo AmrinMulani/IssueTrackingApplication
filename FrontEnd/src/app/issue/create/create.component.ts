@@ -21,6 +21,7 @@ export class CreateComponent implements OnInit {
   issue: CreateIssue;
   currentUser: any;
   allUsers: any = [];
+  authToken : string;
   ngOnInit() {
     this.openSpinner(true)
     this.issue = {
@@ -30,9 +31,8 @@ export class CreateComponent implements OnInit {
       assignee: ''
     };
     this.authService.currentUser.subscribe(user => {
-      console.log('user')
-      console.log(user)
       this.currentUser = user;
+      this.authToken = this.currentUser.authToken;
     });
     this.getAllUsers();
     this.openSpinner(false)
@@ -45,11 +45,10 @@ export class CreateComponent implements OnInit {
   };//end of openSpinner function
 
   getAllUsers() {
-    this.userService.getAllUsers().subscribe(
+    this.userService.getAllUsers(this.authToken).subscribe(
       (response) => {
         if (response.status === 200) {
           this.allUsers = response.data;
-          console.log(this.allUsers);
           this.toastr.success(response.message);
         }
         else
@@ -60,7 +59,6 @@ export class CreateComponent implements OnInit {
     );
   }
   saveData = () => {
-    console.log(this.issue)
     if (this.issue.description.trim() === "") {
       this.toastr.error('Description is empty, Please give a description of the issue')
     }
@@ -80,7 +78,6 @@ export class CreateComponent implements OnInit {
           formData.append('photos', inputEl.files.item(i));
         }
       }
-      console.log(inputEl.files.item(0))
 
       formData.append('title', this.issue.title);
       formData.append('description', this.issue.description);
@@ -89,7 +86,6 @@ export class CreateComponent implements OnInit {
 
       this.userService.createIssue(formData).subscribe((res) => {
         if (res.status === 200) {
-          console.log(res)
 
           let brodCastObject = {
             issueId: res.data.issueId,
@@ -117,11 +113,7 @@ export class CreateComponent implements OnInit {
   }
 
   BroadcastMessage = (data) => {
-    console.log('data form broadcast\n\n')
-    console.log(data)
-    console.log('brodcastNotfication data')
     this.socket.notifyAssignee(data);
-    console.log(data)
   };//end of broadCastNotificcation
 
 }

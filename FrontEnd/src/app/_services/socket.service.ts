@@ -88,6 +88,11 @@ export class SocketService {
     this.socket.emit('notify-assignee', data)
   };//end of notify assignee
 
+
+  public updateRoom = (data) => {
+    this.socket.emit('add-watcher', data)
+  } // end of disconnectSocket
+
   public disconnectedSocket = () => {
     return Observable.create((observer: any) => {
       this.socket.on('disconnect', () => {

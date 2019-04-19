@@ -3,6 +3,7 @@ export interface CreateIssue {
     title: string;
     description: string;
     assignee: string;
+    createdBy?:string;
     attachment: string;
     status?:string;
 }

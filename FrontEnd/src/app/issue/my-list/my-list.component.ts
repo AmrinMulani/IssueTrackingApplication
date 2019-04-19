@@ -23,8 +23,6 @@ export class MyListComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.currentUserSubscription = this.authService.currentUser.subscribe(user => {
-      console.log('user')
-      console.log(user)
       this.currentUser = user;
     });
     const that = this;

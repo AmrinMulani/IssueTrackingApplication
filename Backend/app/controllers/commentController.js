@@ -136,16 +136,16 @@ let getCommentFunction = (req, res) => {
 
     // function to validate params.
     let validateParams = () => {
-            return new Promise((resolve, reject) => {
-                if (check.isEmpty(req.params.issueId)) {
-                    logger.info('issue id is missing', 'getUsersChat handler', 9)
-                    let apiResponse = response.generate(true, 'issue id is missing.', 400, null)
-                    reject(apiResponse)
-                } else {
-                    resolve()
-                }
-            });
-        } // end of the validateParams function.
+        return new Promise((resolve, reject) => {
+            if (check.isEmpty(req.params.issueId)) {
+                logger.info('issue id is missing', 'getUsersChat handler', 9)
+                let apiResponse = response.generate(true, 'issue id is missing.', 400, null)
+                reject(apiResponse)
+            } else {
+                resolve()
+            }
+        });
+    } // end of the validateParams function.
 
     let fetchComment = () => {
 
@@ -155,7 +155,7 @@ let getCommentFunction = (req, res) => {
                 .sort('-createdOn')
                 .skip(parseInt(req.query.skip) || 0)
                 .limit(10)
-                .populate('createdBy')
+                .populate({ 'path': 'createdBy', 'select': '_id userId name' })
                 .lean()
                 .exec((err, data) => {
                     if (err) {
@@ -189,16 +189,16 @@ let getCommentFunction = (req, res) => {
 let getWatchersFunction = (req, res) => {
     // function to validate params.
     let validateParams = () => {
-            return new Promise((resolve, reject) => {
-                if (check.isEmpty(req.params.issueId)) {
-                    logger.info('issue id is missing', 'commentController: getwatcherfunction=>validateparams', 9)
-                    let apiResponse = response.generate(true, 'issue id is missing.', 400, null)
-                    reject(apiResponse)
-                } else {
-                    resolve()
-                }
-            });
-        } // end of the validateParams function.
+        return new Promise((resolve, reject) => {
+            if (check.isEmpty(req.params.issueId)) {
+                logger.info('issue id is missing', 'commentController: getwatcherfunction=>validateparams', 9)
+                let apiResponse = response.generate(true, 'issue id is missing.', 400, null)
+                reject(apiResponse)
+            } else {
+                resolve()
+            }
+        });
+    } // end of the validateParams function.
 
     let fetchWatchers = () => {
         return new Promise((resolve, reject) => {
@@ -207,7 +207,7 @@ let getWatchersFunction = (req, res) => {
                 .sort('-createdOn')
                 //.skip(parseInt(req.query.skip) || 0)
                 //.limit(2)
-                .populate('watcherId')
+                .populate({ 'path': 'watcherId', 'select': '_id userId name' })
                 .lean()
                 .exec((err, data) => {
                     if (err) {

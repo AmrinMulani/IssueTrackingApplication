@@ -3,5 +3,5 @@
     "version": "1.0.0",
     "description": "apiDoc for issuetrackingtool.ga",
     "title": "Issue Tracking Tool API DOC",
-    "url" : "myapp.issuetrackingtool.ga/apidoc"
+    "url" : "http://myapp.issuetrackingtool.ga"
   }

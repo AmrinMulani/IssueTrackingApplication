@@ -97,7 +97,7 @@
             <div class="card">
                 <div class="card-header">
                     <span><i class="fa fa-eye"></i> Watcher List</span>
-                    <span class="pull-right"><button type="button" *ngIf="!isAWatcher" class="btn btn-sm btn-primary"
+                    <span class="pull-right"><button type="button" *ngIf="!isAWatcher && issue.createdBy != currentUser.userDetails._id" class="btn btn-sm btn-primary"
                             (click)="addWatcher()">Watch</button></span>
                 </div>
                 <div class="card-body">

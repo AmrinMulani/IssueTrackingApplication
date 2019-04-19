@@ -28,7 +28,7 @@ app.use(routeLoggerMiddleware.logIp);
 app.use(globalErrorMiddleware.globalErrorHandler);
 app.use(express.static(path.join(__dirname, 'uploads')));
 console.log(path.join(__dirname, './apidoc'))
-app.use(express.static(path.join(__dirname, './app/apidoc')));
+app.use(express.static(path.join(__dirname, './apidoc')));
 
 const modelsPath = './app/models';
 const routesPath = './app/routes';

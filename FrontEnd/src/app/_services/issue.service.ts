@@ -17,8 +17,6 @@ export class IssueService {
       .set('issueId', issueId)
       .set('userId', userId)
       .set('authToken', authToken)
-    console.log('params');
-    console.log(params);
     return this.http.post(`${this.url}/watch`, params);
   }
   getWatchers(issueId: string, skip: number, authToken: string): Observable<any> {

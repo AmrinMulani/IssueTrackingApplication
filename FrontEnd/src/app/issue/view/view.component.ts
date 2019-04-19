@@ -65,8 +65,6 @@ export class ViewComponent implements OnInit {
     this.currentIssueId = this.route.snapshot.paramMap.get("issueId");
 
     this.authService.currentUser.subscribe(user => {
-      console.log('user')
-      console.log(user)
       this.currentUser = user;
       this.authToken = this.currentUser.authToken;
     });
@@ -75,7 +73,6 @@ export class ViewComponent implements OnInit {
   }
 
   initialiseInvites() {
-    console.log('hiiii')
     this.initializeUploader();
     this.getIssue(this.currentIssueId);
     this.getComment();
@@ -134,10 +131,6 @@ export class ViewComponent implements OnInit {
     this.uploader.onAfterAddingFile = (file) => { file.withCredentials = false; }
 
     this.uploader.onSuccessItem = (item, response, status, headers) => {
-      console.log('response');
-      console.log(response);
-      console.log('item');
-      console.log(item);
       if (response) {
         const res = JSON.parse(response);
 
@@ -163,6 +156,14 @@ export class ViewComponent implements OnInit {
           }
           this.watchers.push(watcherObj);
           this.isAWatcher = true;
+
+          if (this.currentUser.userDetails._id != this.currentAssignee) {
+            let x = {
+              roomName: this.currentIssueId,
+              watcherId : this.currentUser.userDetails._id
+            };
+            this.socket.updateRoom(x);
+          }
         }
         else
           this.toastr.error(resp.message);
@@ -186,14 +187,11 @@ export class ViewComponent implements OnInit {
           this.toastr.warning(apiResponse.message);
         }
         this.openSpinner(false);
-        console.log('this.watchers')
-        console.log(this.watchers)
         var test = this.watchers.find(x => x.watcherId._id === this.currentUser.userDetails._id)
         if (test)
           this.isAWatcher = true;
       }, (error) => {
         this.openSpinner(false);
-        console.log(error)
         this.toastr.error('Error while fetching watchers- ' + error);
       }
     );
@@ -205,8 +203,6 @@ export class ViewComponent implements OnInit {
     this.issueService.getComment(this.currentIssueId, this.pageValue * 10, this.authToken).subscribe(
       (apiResponse) => {
 
-        console.log('apiResponse')
-        console.log(apiResponse)
         let previousData = (this.comments.length > 0 ? this.comments.slice() : []);
         if (apiResponse.status == 200) {
           this.comments = apiResponse.data.concat(previousData);
@@ -219,7 +215,6 @@ export class ViewComponent implements OnInit {
         this.openSpinner(false);
       }, (error) => {
         this.openSpinner(false);
-        console.log(error)
         this.toastr.error('Error while fetching comments ' + error);
       }
     );
@@ -242,8 +237,6 @@ export class ViewComponent implements OnInit {
 
     this.issueService.postComment(objpost).subscribe(
       (resp) => {
-        console.log('resp');
-        console.log(resp);
         if (resp.error === false) {
           let comment = {
             description: this.commentDescription,
@@ -266,8 +259,6 @@ export class ViewComponent implements OnInit {
         else
           this.toastr.error(resp.message);
       }, (error) => {
-        console.log('error')
-        console.log(error)
 
         this.toastr.error(error);
       }
@@ -288,14 +279,13 @@ export class ViewComponent implements OnInit {
     this.issueService.getIssue(issueId, this.authToken).subscribe(
       (resp) => {
         if (resp.status === 200) {
-          console.log('response of get issue')
-          console.log(resp)
           this.issue = {
             title: resp.data.title,
             description: resp.data.description,
             attachment: '',
             assignee: resp.data.assignedTo._id,
-            status: resp.data.status
+            status: resp.data.status,
+            createdBy: resp.data.createdBy._id
           };
           this.currentAssignee = resp.data.assignedTo._id;
           //set local property attachment to the response's data-attachment
@@ -332,7 +322,7 @@ export class ViewComponent implements OnInit {
   getAllUsers() {
     this.openSpinner(true);
 
-    this.userService.getAllUsers().subscribe(
+    this.userService.getAllUsers(this.authToken).subscribe(
       (response) => {
         if (response.status === 200) {
           this.allUsers = response.data;
@@ -348,12 +338,9 @@ export class ViewComponent implements OnInit {
 
   //on click of delete photo
   deletePhoto = (photo: string) => {
-    console.log(photo);
     this.openSpinner(true);
     this.issueService.deletePhoto(this.currentIssueId, photo, this.authToken).subscribe(
       response => {
-        console.log('new response')
-        console.log(response);
 
         //setting attachment property to fresh result
         this.attachment = response.data.attachment;
@@ -361,7 +348,6 @@ export class ViewComponent implements OnInit {
         this.openSpinner(false);
       }, error => {
         this.toastr.error(error);
-        console.log(error);
         this.openSpinner(false);
       });
   };//end of deletePhoto
@@ -386,7 +372,6 @@ export class ViewComponent implements OnInit {
       };
       this.issueService.updateIssue(dataObj).subscribe((res) => {
         if (res.status === 200) {
-          console.log(res)
           this.toastr.success(res.message);
           //resetting form to default state
           this.updateForm.reset(this.issue);
@@ -403,6 +388,7 @@ export class ViewComponent implements OnInit {
                 issueId: this.currentIssueId,
                 oldAssignee: this.currentAssignee,
                 newAssignee: this.issue.assignee,
+                createdBy: this.issue.createdBy,
                 title: this.issue.title
               };
               this.updateWatcherList(toUnsubscribeNotification), (res) => {
@@ -410,7 +396,7 @@ export class ViewComponent implements OnInit {
               };
             }
           }
-
+          this.currentAssignee = this.issue.assignee;
         } else {
           this.toastr.warning(res.message);
         }
@@ -430,11 +416,7 @@ export class ViewComponent implements OnInit {
     this.socket.updateSubsrcibeUsers(data);
   };
   broadCastNotification = (data) => {
-    console.log('data form broadcast\n\n')
-    console.log(data)
-    console.log('brodcastNotfication data')
     this.socket.updateIssueNotification(data);
-    console.log(data)
   };//end of broadCastNotificcation
 
 

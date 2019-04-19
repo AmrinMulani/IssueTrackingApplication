@@ -24,8 +24,6 @@ export class SearchComponent implements OnInit, OnDestroy {
   currentUser: any;
   ngOnInit() {
     this.currentUserSubscription = this.authService.currentUser.subscribe(user => {
-      console.log('user')
-      console.log(user)
       this.currentUser = user;
     });
 
@@ -52,7 +50,6 @@ export class SearchComponent implements OnInit, OnDestroy {
             `${environment.baseUrl}api/v1/issues/get/all?authToken=${this.currentUser.authToken}`,
             dataTablesParameters, {}
           ).subscribe(resp => {
-            console.log(resp.data)
             that.issues = resp.data;
             callback({
               recordsTotal: resp.recordsTotal,

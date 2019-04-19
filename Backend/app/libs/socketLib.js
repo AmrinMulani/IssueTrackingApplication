@@ -182,6 +182,7 @@ let setServer = (server) => {
                 }
             })
             if (!check.isEmpty(assigneeSocket)) {
+                assigneeSocket.room = roomName;
                 assigneeSocket.join(roomName);
             }
 
@@ -195,11 +196,18 @@ let setServer = (server) => {
 
         });
 
+        socket.on('add-watcher',(data) =>{
+            let roomName = data.roomName + 'Room';
+            socket.room = roomName;
+            socket.join(roomName);
+        });
+
         //once a issue is upadted and there's change in watcher
         socket.on('update-user', (data) => {
             let roomName = data.issueId + 'Room';
             let userId = data.oldAssignee;
             let newAssignee = data.newAssignee;
+            let createdBy = data.createdBy
             debugger;
             d = [];
             sockets = myIo.in(roomName);
@@ -233,6 +241,7 @@ let setServer = (server) => {
                     }
                 })
                 if (!check.isEmpty(assigneeSocket)) {
+                    assigneeSocket.room = roomName;
                     assigneeSocket.join(roomName);
                 }
             }
@@ -240,12 +249,13 @@ let setServer = (server) => {
                 issueId: data.issueId,
                 title: data.title
             };
+            
+            if (!check.isEmpty(socketToRemove) && createdBy != userId) {
+                socketToRemove.leave(roomName);
+            }
             socket.to(roomName)
                 .broadcast.emit('user-updated-data', dataObj);
 
-            if (!check.isEmpty(socketToRemove)) {
-                socketToRemove.leave(roomName);
-            }
         })
         //once issue is updated
         socket.on('update-issue', (data) => {

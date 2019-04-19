@@ -7,73 +7,67 @@ const auth = require('../middlewares/auth')
 module.exports.setRouter = (app) => {
 
     let baseUrl = `${appConfig.apiVersion}/watch`;
-
     // defining routes.
 
+    
     /**
-     * @apiGroup users
+     * @apiGroup watcher
      * @apiVersion  1.0.0
-     * @api {post} /api/v1/users/signup api for user signup.
+     * @api {post} /api/v1/watch/ api to add watcher.
      *
-     * @apiParam {string} firstName first-name of the user. (body params) (required)
-     * @apiParam {string} lastName last-name of the user. (body params) (optional)
-     * @apiParam {string} email email of the user. (body params) (required)
-     * @apiParam {string} password password of the user. (body params) (required)
-     * @apiParam {string} mobileNumber mobile number of the user. (body params) (required)
+     * @apiParam {string} issueId issue id. (params) (required)
+     * @apiParam {string} userID watcher user id. (params) (required)
+     * @apiParam {string} authToken auth token for the current user. (required)
      *
      * @apiSuccess {object} myResponse shows error status, message, http status code, result.
      * 
      * @apiSuccessExample {object} Success-Response:
-         {
+        {
             "error": false,
-            "message": "User Created",
+            "message": "You've successfully added as watcher for the issue",
             "status": 200,
             "data": {
-                "userId": "XE14LO_NJ",
-                "firstName": "Himanshu",
-                "lastName": "",
-                "email": "bhandarihimanshu6@gmail.com",
-                "mobileNumber": 918743967663,
-                "createdOn": "2019-03-08T09:58:16.000Z",
-                "_id": "5c823cb81ca96210b83ff6ba",
+                "createdOn": "2019-04-19T20:58:32.000Z",
+                "_id": "5cba3678ab92f420c01496f7",
+                "issueId": "7UpsUYimN",
+                "watcherId": "5cb34fcfbc8d0c2ca0b3206b",
                 "__v": 0
             }
         }
     */
-    // params: email, password.
-    //app.post(`${baseUrl}/signup`, userController.signUpFunction);
+    // body params: issueId, userId.
+    app.post(`${baseUrl}`, auth.isAuthorized, commentController.addWatcher);
 
-
-    /**
-     * @apiGroup users
+     /**
+     * @apiGroup watcher
      * @apiVersion  1.0.0
-     * @api {post} /api/v1/users/login api for user login.
+     * @api {get} /api/v1/watch/get/issueId/:issueId api to get watcher list.
      *
-     * @apiParam {string} email email of the user. (body params) (required)
-     * @apiParam {string} password password of the user. (body params) (required)
+     * @apiParam {string} issueId issue id. (params) (required)
+     * @apiParam {string} authToken auth token for the current user. (required)
      *
      * @apiSuccess {object} myResponse shows error status, message, http status code, result.
      * 
      * @apiSuccessExample {object} Success-Response:
-         {
+        {
             "error": false,
-            "message": "Login Successful",
+            "message": "watchers fetched",
             "status": 200,
-            "data": {
-                "authToken": "eyJhbGciOiJIUertyuiopojhgfdwertyuVCJ9.MCwiZXhwIjoxNTIwNDI29tIiwibGFzdE5hbWUiE4In19.hAR744xIY9K53JWm1rQ2mc",
-                "userDetails": {
-                "mobileNumber": 2234435524,
-                "email": "someone@mail.com",
-                "lastName": "Sengar",
-                "firstName": "Rishabh",
-                "userId": "-E9zxTYA8"
+            "data": [
+                {
+                    "_id": "5cba3678ab92f420c01496f7",
+                    "createdOn": "2019-04-19T20:58:32.000Z",
+                    "issueId": "7UpsUYimN",
+                    "watcherId": {
+                        "_id": "5cb34fcfbc8d0c2ca0b3206b",
+                        "userId": "vhJOvZDRBV",
+                        "name": "Himanshu B"
+                    },
+                    "__v": 0
                 }
-            }
+            ]
         }
     */
-
-    // body params: issueId, userId.
-    app.post(`${baseUrl}`, auth.isAuthorized, commentController.addWatcher);
 
     app.get(`${baseUrl}/get/issueId/:issueId`, auth.isAuthorized, commentController.getWatchers);
 
