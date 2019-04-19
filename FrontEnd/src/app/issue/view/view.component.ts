@@ -120,10 +120,10 @@ export class ViewComponent implements OnInit {
     this.hasBaseDropZoneOver = e;
   }
   initializeUploader() {
-   
+
     this.uploader = new FileUploader({
 
-      url: environment.baseUrl + 'issues/create/' + this.currentIssueId + '/upload?authToken=' + this.authToken,
+      url: environment.baseUrl + 'api/v1/issues/create/' + this.currentIssueId + '/upload?authToken=' + this.authToken,
       itemAlias: 'photo',
       isHTML5: true,
       allowedFileType: ['image'],
@@ -394,13 +394,15 @@ export class ViewComponent implements OnInit {
           if (this.issue.assignee === this.currentAssignee) {
             this.broadCastNotification(res.data);
           } else {
-            let data = this.watchers.find(x => x.watcherId._id === this.currentAssignee);
-            if (data) {
+            //to check if older assingee is in watcher list
+            let userInWatcherList = this.watchers.find(x => x.watcherId._id === this.currentAssignee);
+            if (userInWatcherList) {
               this.broadCastNotification(res.data);
             } else {
               let toUnsubscribeNotification = {
                 issueId: this.currentIssueId,
-                userId: this.currentAssignee,
+                oldAssignee: this.currentAssignee,
+                newAssignee: this.issue.assignee,
                 title: this.issue.title
               };
               this.updateWatcherList(toUnsubscribeNotification), (res) => {

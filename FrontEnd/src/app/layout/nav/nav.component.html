@@ -8,13 +8,13 @@
         <div class="collapse navbar-collapse" id="navbarColor02">
             <ul class="navbar-nav mr-auto" *ngIf="loggedIn()">
                 <li class="nav-item" routerLinkActive="active">
-                    <a class="nav-link" [routerLink]="['/dashboard']">Dashboard </a>
+                    <a class="nav-link" [routerLink]="['/dashboard']"><span><i class="fa fa-1x fa-tachometer"> Dashboard</i></span> </a>
                 </li>
                 <li class="nav-item" routerLinkActive="active">
-                    <a class="nav-link" [routerLink]="['/my-list']">My Issue List</a>
+                    <a class="nav-link" [routerLink]="['/my-list']"><span><i class="fa fa-list"> My Issue List</i></span></a>
                 </li>
                 <li class="nav-item" routerLinkActive="active">
-                    <a class="nav-link" [routerLink]="['/search']">All Issues</a>
+                    <a class="nav-link" [routerLink]="['/search']"><span><i class="fa fa-credit-card-alt"> All Issues</i></span></a>
                 </li>
             </ul>
             <div *ngIf="loggedIn()" class="dropdown" dropdown>

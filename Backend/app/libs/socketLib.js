@@ -119,24 +119,26 @@ let setServer = (server) => {
 
                             // // socket.room = key;
                             // // socket.join(room);
-                            createRoom().then((resolve) => {
-                                // redisLib.getAllUsersInAHash("roomDa", (err, result) => {
-                                //     console.log('All users in hash')
-                                //     console.log(result)
-                                // })
-                                debugger;
-                                socketssss = myIo;
-                                //  d=[];
-                                // sockets = myIo.in('dlx_cQZ6nRoom');
-                                // Object.keys(sockets.sockets).forEach((item) => {
-                                //     d.push(sockets.sockets[item])
-                                //     console.log("TODO: Item:", sockets.sockets[item].userId)
-                                // })
-                                // sockets = myIo.in("dlx_cQZ6nRoom")
-                                // Object.keys(sockets.sockets).forEach((item) => {
-                                //     console.log("TODO: Item:", sockets.sockets[item].userId)
-                                // })
-                            })
+                            createRoom()
+
+                                .then((resolve) => {
+                                    // redisLib.getAllUsersInAHash("roomDa", (err, result) => {
+                                    //     console.log('All users in hash')
+                                    //     console.log(result)
+                                    // })
+
+                                    socketssss = myIo;
+                                    //  d=[];
+                                    // sockets = myIo.in('dlx_cQZ6nRoom');
+                                    // Object.keys(sockets.sockets).forEach((item) => {
+                                    //     d.push(sockets.sockets[item])
+                                    //     console.log("TODO: Item:", sockets.sockets[item].userId)
+                                    // })
+                                    // sockets = myIo.in("dlx_cQZ6nRoom")
+                                    // Object.keys(sockets.sockets).forEach((item) => {
+                                    //     console.log("TODO: Item:", sockets.sockets[item].userId)
+                                    // })
+                                })
                         }
                     });
                     createRoom = () => {
@@ -196,23 +198,43 @@ let setServer = (server) => {
         //once a issue is upadted and there's change in watcher
         socket.on('update-user', (data) => {
             let roomName = data.issueId + 'Room';
-            let userId = data.userId;
-
+            let userId = data.oldAssignee;
+            let newAssignee = data.newAssignee;
             debugger;
             d = [];
             sockets = myIo.in(roomName);
             Object.keys(sockets.sockets).forEach((item) => {
                 d.push(sockets.sockets[item])
-                console.log("TODO: Item:", sockets.sockets[item].userId)
             })
-            socketToRemove = '';
+            socketToRemove = ''; assigneeAlreadyExist = false;
             d.forEach(e => {
-                if (e.userId === userId) {
-                    socketToRemove = e;
+                roomArry = [];
+                Object.keys(e.rooms).forEach((item) => {
+                    roomArry.push(e.rooms[item]);
+                });
+                if (roomArry != null && roomArry.length > 0)
+                    findRoomAvailable = roomArry.find(x => x === roomName);
+
+                if (findRoomAvailable) {
+                    if (e.userId === userId) {
+                        socketToRemove = e;
+                    }
+                    if (e.userId === newAssignee) {
+                        assigneeAlreadyExist = true;
+                    }
                 }
             })
-            if (!check.isEmpty(socketToRemove)) {
-                socketToRemove.leave(roomName);
+            if (!assigneeAlreadyExist) {
+                let allConnectedSockets = myIo.connected;
+                let assigneeSocket = '';
+                Object.keys(allConnectedSockets).forEach(e => {
+                    if (allConnectedSockets[e].userId === newAssignee) {
+                        assigneeSocket = allConnectedSockets[e];
+                    }
+                })
+                if (!check.isEmpty(assigneeSocket)) {
+                    assigneeSocket.join(roomName);
+                }
             }
             let dataObj = {
                 issueId: data.issueId,
@@ -220,6 +242,10 @@ let setServer = (server) => {
             };
             socket.to(roomName)
                 .broadcast.emit('user-updated-data', dataObj);
+
+            if (!check.isEmpty(socketToRemove)) {
+                socketToRemove.leave(roomName);
+            }
         })
         //once issue is updated
         socket.on('update-issue', (data) => {

@@ -1,6 +1,118 @@
 <app-nav></app-nav>
 
 <div class="container mt-5">
+    <div class="row ">
+
+        <div class="col-lg-12 col-md-12 col-xs-12">
+            <div class="row">
+                <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                    <div class="info-box bg-pink hover-expand-effect">
+                        <div class="icon">
+                            <i class="fa fa-credit-card-alt"></i>
+                        </div>
+                        <div class="content">
+                            <div class="text">Total Issue</div>
+                            
+                            <div class="number count-to" id="active1">34405</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                    <div class="info-box bg-cyan hover-expand-effect">
+                        <div class="icon">
+                            <i class="fa fa-tasks"></i>
+                        </div>
+                        <div class="content">
+                            <div class="text">Issue Assigned to you</div>
+                            
+                            <div class="number count-to" id="active2">
+                                12510
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                    <div class="info-box bg-light-green hover-expand-effect">
+                        <div class="icon">
+                            <i class="fa fa-pencil-square-o"></i>
+                        </div>
+                        <div class="content">
+                            <div class="text">Issue Posted By You</div>
+                            
+                            <div class="number count-to" id="active3">7766</div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+    <div class="row ">
+
+        <div class="col-md-12 col-xs-12">
+            <div class="row">
+                <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                    <div class="info-box bg-inprogress hover-expand-effect">
+                        <div class="icon">
+                            <i class="fa fa-spinner"></i>
+                        </div>
+                        <div class="content">
+                            <div class="text">In-Progress</div>
+                            
+                            <div class="number count-to" id="active1">34405</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                    <div class="info-box bg-inbacklog hover-expand-effect">
+                        <div class="icon">
+                            <i class="fa fa-files-o"></i>
+                        </div>
+                        <div class="content">
+                            <div class="text">In-Backlog</div>
+                            
+                            <div class="number count-to" id="active2">
+                                12510
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                    <div class="info-box bg-intest hover-expand-effect">
+                        <div class="icon">
+                            <i class="fa fa-list"></i>
+                        </div>
+                        <div class="content">
+                            <div class="text">In-Test</div>
+                            
+                            <div class="number count-to" id="active3">7766</div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                    <div class="info-box bg-orange hover-expand-effect">
+                        <div class="icon">
+                            <i class="fa fa-check-square-o"></i>
+                        </div>
+                        <div class="content">
+                            <div class="text">Done</div>
+                            
+                            <div class="number count-to" id="active4">4744</div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
     <button type="button" class="btn btn-success" [routerLink]="['/create']">Create new issue</button>
     <div class="mt-5">
         <table datatable [dtOptions]="dtOptions" class="table table-sm table-striped table-responsive">
@@ -21,14 +133,15 @@
                     <td>{{ issue.status }}</td>
                     <td>{{ issue.createdBy }}</td>
                     <td class="d-none">{{ issue.issueId }}</td>
-                    <td><a class="text-primary" [routerLink]="['/view',issue.issueId]" routerLinkActive="router-link-active">View</a></td>
+                    <td><a class="text-primary" [routerLink]="['/view',issue.issueId]"
+                            routerLinkActive="router-link-active">View</a></td>
                 </tr>
             </tbody>
             <tbody *ngIf="issues?.length == 0">
                 <tr>
                     <td colspan="5" class="no-data-available">No data!</td>
                 </tr>
-                <tbody>
+            <tbody>
         </table>
     </div>
 
