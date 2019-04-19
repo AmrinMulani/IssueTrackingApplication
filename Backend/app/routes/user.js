@@ -26,13 +26,12 @@ module.exports.setRouter = (app) => {
     /**
      * @apiGroup users
      * @apiVersion  1.0.0
-     * @api {post} /api/v1/users/signup api for user signup.
+     * @api {post} /api/v1/users/register api for user registration.
      *
-     * @apiParam {string} firstName first-name of the user. (body params) (required)
-     * @apiParam {string} lastName last-name of the user. (body params) (optional)
-     * @apiParam {string} email email of the user. (body params) (required)
+     * @apiParam {string} name first-name of the user. (body params) (required)
+     * @apiParam {string} email last-name of the user. (body params) (required)
      * @apiParam {string} password password of the user. (body params) (required)
-     * @apiParam {string} mobileNumber mobile number of the user. (body params) (required)
+     * @apiParam {string} photo photo of the user. (body params) (required)
      *
      * @apiSuccess {object} myResponse shows error status, message, http status code, result.
      * 
@@ -41,20 +40,27 @@ module.exports.setRouter = (app) => {
             "error": false,
             "message": "User Created",
             "status": 200,
+                     {
+            "error": false,
+            "message": "You are successfully registerd",
+            "status": 200,
             "data": {
-                "userId": "XE14LO_NJ",
-                "firstName": "Himanshu",
-                "lastName": "",
-                "email": "bhandarihimanshu6@gmail.com",
-                "mobileNumber": 918743967663,
-                "createdOn": "2019-03-08T09:58:16.000Z",
-                "_id": "5c823cb81ca96210b83ff6ba",
-                "__v": 0
+                "createdOn": "2019-04-19T17:35:36.000Z",
+                "email": "sign@gmail.com",
+                "name": "Test Signup",
+                "password": "$2a$10$9yx2mKJjmiccaQlabnCdIeFdbFhF7.Z4reDIZSZ1CyZV1lizB2pmy",
+                "photoUrl": "1555695336111-NT1284.jpg",
+                "provider": "local",
+                "providerId": "",
+                "userId": "WYwqnShN-",
+                "__v": 0,
+                "_id": "5cba06e8a0ab9d3dbcc5721b"
             }
+
         }
     */
-    // params: email, password.
-    //app.post(`${baseUrl}/signup`, userController.signUpFunction);
+    
+    app.post(`${baseUrl}/register`, upload.single('photo'), userController.register);
 
 
     /**
@@ -97,5 +103,4 @@ module.exports.setRouter = (app) => {
     app.post(`${baseUrl}/create`, upload.array('photos'), userController.createIssue);
 
 
-    app.post(`${baseUrl}/register`, upload.single('photo'), userController.register);
 }

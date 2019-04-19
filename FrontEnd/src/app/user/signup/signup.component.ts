@@ -77,6 +77,8 @@ export class SignupComponent implements OnInit {
     formData.append('email', this.registerForm.value.email);
     formData.append('password', this.registerForm.value.password);
 
+    console.log('formData')
+    console.log(formData)
     this.userService.register(formData).subscribe((res) => {
       if (res.status === 200) {
         console.log(res)

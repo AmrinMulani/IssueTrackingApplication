@@ -26,8 +26,9 @@ app.use(cookieParser());
 app.use(passport.initialize());
 app.use(routeLoggerMiddleware.logIp);
 app.use(globalErrorMiddleware.globalErrorHandler);
-console.log('\n\n\n\n\n\n\n\n' + path.join(__dirname, 'uploads'));
 app.use(express.static(path.join(__dirname, 'uploads')));
+console.log(path.join(__dirname, './apidoc'))
+app.use(express.static(path.join(__dirname, './app/apidoc')));
 
 const modelsPath = './app/models';
 const routesPath = './app/routes';

@@ -480,6 +480,35 @@ let getAllIssue = (req, res) => {
             })
     })
 }; //end of get getAllIssue
+
+let getCountDasboard = (req, res) => {
+    IssueModel.count({ 'createdBy': req.query.id }, (e1, c1) => {
+        IssueModel.count({ 'assignedTo': req.query.id }, (e2, c2) => {
+            IssueModel.count((e3, c3) => {
+                IssueModel.count({ 'status': 'In-Progress' }, (e4, c4) => {
+                    IssueModel.count({ 'status': 'In-Backlog' }, (e5, c5) => {
+                        IssueModel.count({ 'status': 'In-Test' }, (e6, c6) => {
+                            IssueModel.count({ 'status': 'Done' }, (e7, c7) => {
+                                let result = {
+                                    createdByUser: c1,
+                                    assignedToUser: c2,
+                                    allIssues: c3,
+                                    inProgress: c4,
+                                    inBacklog: c5,
+                                    inTest: c6,
+                                    inDone: c7
+                                };
+
+                                let apiResponse = response.generate(false, 'Found', 200, result);
+                                res.send(apiResponse);
+                            })
+                        })
+                    })
+                })
+            })
+        })
+    })
+};//get Count dashboard EOF
 module.exports = {
     getIssuesReporterWise: getIssuesReporterWise,
     viewByIssueId: viewByIssueId,
@@ -487,5 +516,6 @@ module.exports = {
     uploadPhoto: uploadPhotoFunction,
     updateIssue: updateIssueFunction,
     getAllIssue: getAllIssue,
+    getCountDasboard: getCountDasboard,
     getAllIssuePostedByUser: getAllIssuePostedByUser
 }

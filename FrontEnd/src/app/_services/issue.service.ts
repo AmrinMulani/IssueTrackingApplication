@@ -52,13 +52,17 @@ export class IssueService {
     return this.http.post(`${this.url}/comments`, httpParams);
   }
 
+  //get all count for dashboard
+  getCount(data: any): Observable<any> {
+    return this.http.get(`${this.url}/issues/get/count?id=${data.id}&authToken=${data.authToken}`);
+  }
   //Update issue
   updateIssue(data): Observable<any> {
     const params = new HttpParams()
       .set('title', data.title)
       .set('description', data.description)
       .set('assignedTo', data.assignedTo)
-      
+
       .set('status', data.status)
       .set('modifiedBy', data.modifiedBy)
       .set('authToken', data.authToken);

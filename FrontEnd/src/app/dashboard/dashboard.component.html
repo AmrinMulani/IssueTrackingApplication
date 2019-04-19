@@ -12,8 +12,8 @@
                         </div>
                         <div class="content">
                             <div class="text">Total Issue</div>
-                            
-                            <div class="number count-to" id="active1">34405</div>
+
+                            <div class="number count-to" id="active1">{{dashboardCount?.allIssues}}</div>
                         </div>
                     </div>
                 </div>
@@ -24,9 +24,9 @@
                         </div>
                         <div class="content">
                             <div class="text">Issue Assigned to you</div>
-                            
+
                             <div class="number count-to" id="active2">
-                                12510
+                                {{dashboardCount?.assignedToUser}}
                             </div>
 
                         </div>
@@ -39,8 +39,10 @@
                         </div>
                         <div class="content">
                             <div class="text">Issue Posted By You</div>
-                            
-                            <div class="number count-to" id="active3">7766</div>
+
+                            <div class="number count-to" id="active3">
+                                {{dashboardCount?.createdByUser}}
+                            </div>
 
                         </div>
                     </div>
@@ -62,8 +64,10 @@
                         </div>
                         <div class="content">
                             <div class="text">In-Progress</div>
-                            
-                            <div class="number count-to" id="active1">34405</div>
+
+                            <div class="number count-to" id="active1">
+                                {{dashboardCount?.inProgress}}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -74,9 +78,9 @@
                         </div>
                         <div class="content">
                             <div class="text">In-Backlog</div>
-                            
+
                             <div class="number count-to" id="active2">
-                                12510
+                                {{dashboardCount?.inBacklog}}
                             </div>
 
                         </div>
@@ -89,8 +93,10 @@
                         </div>
                         <div class="content">
                             <div class="text">In-Test</div>
-                            
-                            <div class="number count-to" id="active3">7766</div>
+
+                            <div class="number count-to" id="active3">
+                                {{dashboardCount?.inTest}}
+                            </div>
 
                         </div>
                     </div>
@@ -102,8 +108,10 @@
                         </div>
                         <div class="content">
                             <div class="text">Done</div>
-                            
-                            <div class="number count-to" id="active4">4744</div>
+
+                            <div class="number count-to" id="active4">
+                                {{dashboardCount?.inDone}}
+                            </div>
 
                         </div>
                     </div>

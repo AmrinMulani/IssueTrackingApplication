@@ -93,6 +93,7 @@ module.exports.setRouter = (app) => {
     //get all issues
     app.post(`${baseUrl}/get/all`, auth.isAuthorized, issueController.getAllIssue);
 
+    app.get(`${baseUrl}/get/count`, auth.isAuthorized, issueController.getCountDasboard);
 
     app.get(`${baseUrl}/view/:issueId`, auth.isAuthorized, issueController.viewByIssueId);
 

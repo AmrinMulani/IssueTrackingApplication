@@ -42,7 +42,6 @@ export class NavComponent implements OnInit, OnDestroy {
         else
           this.photoUrl = photo;
         // this.photoUrl = this.sanitizer.bypassSecurityTrustUrl(photo);
-        console.log(this.photoUrl)
       }
 
 
@@ -56,7 +55,6 @@ export class NavComponent implements OnInit, OnDestroy {
   makeSocketConnection = () => {
     this.socketService.verifyUser().subscribe(
       (data) => {
-        console.log('data hai ' + data)
         this.disconnectedSocket = false;
         this.socketService.setUser(this.authToken);
       });
@@ -65,8 +63,6 @@ export class NavComponent implements OnInit, OnDestroy {
   protected getBroadCast: any = () => {
     this.socketService.registerForNotification()
       .subscribe((data) => {
-        console.log('inside getBroadCast updated')
-        console.log(data)
 
 
         this.toastr.success('Changes in issue ' + data.title + ' (' + data.issueId + ') Click to follow', '', {
@@ -108,7 +104,6 @@ export class NavComponent implements OnInit, OnDestroy {
   } //end get message from a user
 
   toasterClickedHandler(data) {
-    console.log('click event handled')
     this.router.navigate(['/view/' + data]);
 
   }

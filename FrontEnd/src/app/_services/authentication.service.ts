@@ -19,7 +19,6 @@ export class AuthenticationService {
   currentUserSubject = new BehaviorSubject<any>(JSON.parse(localStorage.getItem('userData')));
   currentUser = this.currentUserSubject.asObservable();
   constructor(private httpClient: HttpClient, private router: Router, private toastr: ToastrService) {
-    console.log('service instance created')
   }
 
   public get currentUserValue(): any {
@@ -36,8 +35,6 @@ export class AuthenticationService {
     return this.httpClient.post<any>(`${this.url}/users/signInSocial`, httpParams)
       .pipe(map(user => {
         if (user && user.data.authToken) {
-          console.log('user.data.authToken')
-          console.log(user.data.authToken)
 
           // store user details and jwt token in local storage to keep user logged in between page refreshes
           localStorage.setItem('userData', JSON.stringify(user.data));
@@ -55,8 +52,6 @@ export class AuthenticationService {
     return this.httpClient.post<any>(`${this.url}/users/login`, params)
       .pipe(map(user => {
         if (user && user.data.authToken) {
-          console.log('user.data.authToken')
-          console.log(user.data.authToken)
           // store user details and jwt token in local storage to keep user logged in between page refreshes
           localStorage.setItem('userData', JSON.stringify(user.data));
           this.changeUserData(user.data);
@@ -68,9 +63,6 @@ export class AuthenticationService {
   }
   //exception handler
   private handleError(err: HttpErrorResponse) {
-    console.log(err)
-    console.log("Handle Http calls error");
-    console.log(err.error.message);
     return throwError(err.error);
   }
   storeData(data) {
@@ -86,7 +78,6 @@ export class AuthenticationService {
   }
   logout() {
     this.currentUserSubject.next(null);
-    console.log(this.currentUserSubject.value);
     localStorage.removeItem('userData');
     this.toastr.info("Logged out successfully!");
     this.router.navigate(['/login'])

@@ -6,6 +6,9 @@ import { DataTablesResponse } from '../_models/DataTablesResponse';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { AuthenticationService } from '../_services/authentication.service';
 import { environment } from 'src/environments/environment';
+import { getElementDepthCount } from '@angular/core/src/render3/state';
+import { IssueService } from '../_services/issue.service';
+import { DashboardCount } from '../_models/dashboardCount';
 
 @Component({
   selector: 'app-dashboard',
@@ -17,21 +20,19 @@ export class DashboardComponent implements OnInit {
   dtOptions: DataTables.Settings = {};
   issues: IssueByReporter[];
   currentUser: any;
+  dashboardCount: DashboardCount;
   constructor(private toastr: ToastrService,
-    private http: HttpClient, private authService: AuthenticationService,
+    private http: HttpClient, private authService: AuthenticationService, private issueService:IssueService,
     private spinner: NgxSpinnerService) { }
 
   someClickHandler(info: any): void {
-    console.log(info.issueId + ' - ' + info.title);
   }
   ngOnInit() {
 
     this.authService.currentUser.subscribe(user => {
-      console.log('user')
-       console.log(user)
       this.currentUser = user;
     });
-
+    this.getCount();
     const that = this;
     this.dtOptions = {
       pagingType: 'full_numbers',
@@ -57,11 +58,21 @@ export class DashboardComponent implements OnInit {
             });
           });
       },
-      columns: [{ data: 'title', width:'40%' },{ data: 'createdOn', width:'30%' }, { data: 'status', width:'10%' },
-      { data: 'createdBy', width:'20%', orderable: false }, 
-      { data: 'issueId', width:'10%', orderable: false },  { data: '', orderable: false }]
+      columns: [{ data: 'title', width: '40%' }, { data: 'createdOn', width: '30%' }, { data: 'status', width: '10%' },
+      { data: 'createdBy', width: '20%', orderable: false },
+      { data: 'issueId', width: '10%', orderable: false }, { data: '', orderable: false }]
 
     };
   }
-
+  getCount = () => {
+    let data={
+      id: this.currentUser.userDetails._id,
+      authToken: this.currentUser.authToken
+    }
+    this.issueService.getCount(data).subscribe((resp)=>{
+      this.dashboardCount= resp.data;
+    },(err)=>{
+      this.toastr.error(err);
+    })
+  };//end of getCount 
 }

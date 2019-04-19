@@ -167,21 +167,6 @@ let loginFunction = (req, res) => {
         });
 };
 let signInSocial = (req, res) => {
-    // let getUser = (req, res) => {
-    //     return new Promise((resolve, reject) => {
-    //         const body = req.body;
-    //         const typeOfReq = body.type;
-    //         //console.log(typeOfReq);
-    //         if (typeOfReq === 'google') {
-    //             googleAuth.getGoogleUser(body.idToken)
-    //             .then(apiResponse => {
-    //                 //console.log('apiResponse')
-    //                 //console.log(apiResponse)
-    //                 resolve(apiResponse)
-    //             });
-    //         }
-    //     });
-    // }; //end of getUser
 
     let getUser = (req, res) => {
         const body = req.body;
@@ -213,15 +198,6 @@ let signInSocial = (req, res) => {
                         }
                         res.send(error)
                     });
-                break;
-            case 'facebook':
-                return facebookAuth.getUser(login.code).then(response => {
-                    const content = {
-                        token: createToken(response),
-                        user: response
-                    };
-                    return apiResponse;
-                });
                 break;
             default:
                 return new Error('unknow token type [' + type + ']');
@@ -270,22 +246,15 @@ let signInSocial = (req, res) => {
         });
     }; //end of findAndSaveUser
     let createToken = (result) => {
-        //console.log('inside create token method');
-        //console.log('result inserted or fetched')
-        //console.log(result)
-
+        
         //start of generate token
         return new Promise((resolve, reject) => {
             token.generateToken(result, (err, tokenDetails) => {
                 if (err) {
-                    //console.log('err');
-                    //console.log(err);
                     reject(response.generate(true, 'Failed To Generate Token', 500, null))
                 } else {
                     tokenDetails.userId = result.userId;
                     tokenDetails.userDetails = result;
-                    //console.log('tokenDetails')
-                    //console.log(tokenDetails)
                     resolve(tokenDetails);
                 }
             })
@@ -457,7 +426,7 @@ let createIssueFunction = (req, res) => {
             });
         });
     }; //end of saveData
-    
+
     checkParameters(req, res)
         .then(saveData)
         .then((resolve) => {

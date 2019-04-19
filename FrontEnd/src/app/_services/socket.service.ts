@@ -16,9 +16,7 @@ export class SocketService {
   private authToken;
 
   constructor() {
-    console.log(this.url)
     this.socket = io(this.url);
-    // console.log(this.socket)
   }
 
 
