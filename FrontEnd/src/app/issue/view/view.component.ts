@@ -24,7 +24,7 @@ export class ViewComponent implements OnInit {
   // public scrollMe: ElementRef;
   uploader: FileUploader;
   hasBaseDropZoneOver = false;
-  baseUrl = 'http://localhost:3000/api/v1/';
+  //baseUrl = 'http://localhost:3000/api/v1/';
   @ViewChild('updateForm') updateForm: NgForm;
   navigationSubscription;
   issue: CreateIssue;
@@ -35,7 +35,7 @@ export class ViewComponent implements OnInit {
   modalAttachment: BsModalRef;
   photo: any;
   attachment: any = [];
-  status: any = ['In-Progress', 'In-Test', 'Done', 'Pending', 'Completed', 'Backlog'];
+  status: any = ['In-Progress', 'In-Backlog', 'In-Test', 'Done'];
   currentIssueId: string; //to hold current issue id from route
   currentAssignee: string; //to hold current assignee
   authToken: string;
@@ -91,7 +91,7 @@ export class ViewComponent implements OnInit {
     }
   }
   openModal(photo: string, template: TemplateRef<any>) {
-    this.photo = `${environment.baseUrl}photo`;
+    this.photo = `${environment.baseUrl}${photo}`;
     this.modalRef = this.modalService.show(template);
   }
 
@@ -120,12 +120,10 @@ export class ViewComponent implements OnInit {
     this.hasBaseDropZoneOver = e;
   }
   initializeUploader() {
-    console.log('url')
-    console.log(this.baseUrl + 'issues/create/' + this.currentIssueId + '/upload')
-
+   
     this.uploader = new FileUploader({
 
-      url: this.baseUrl + 'issues/create/' + this.currentIssueId + '/upload?authToken=' + this.authToken,
+      url: environment.baseUrl + 'issues/create/' + this.currentIssueId + '/upload?authToken=' + this.authToken,
       itemAlias: 'photo',
       isHTML5: true,
       allowedFileType: ['image'],

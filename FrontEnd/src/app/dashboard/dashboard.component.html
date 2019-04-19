@@ -7,9 +7,9 @@
             <thead>
                 <tr>
                     <th>Title</th>
-                    <th>Reported By</th>
                     <th>Date</th>
                     <th>Status</th>
+                    <th>Reported By</th>
                     <th class="d-none">Id</th>
                     <th>Action</th>
                 </tr>
@@ -17,9 +17,9 @@
             <tbody *ngIf="issues?.length != 0">
                 <tr *ngFor="let issue of issues">
                     <td>{{ issue.title }}</td>
-                    <td>{{ issue.createdBy }}</td>
                     <td>{{ issue.createdOn | date:'medium' }}</td>
                     <td>{{ issue.status }}</td>
+                    <td>{{ issue.createdBy }}</td>
                     <td class="d-none">{{ issue.issueId }}</td>
                     <td><a class="text-primary" [routerLink]="['/view',issue.issueId]" routerLinkActive="router-link-active">View</a></td>
                 </tr>

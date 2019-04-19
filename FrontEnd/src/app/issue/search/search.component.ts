@@ -1,32 +1,42 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { AuthenticationService } from 'src/app/_services/authentication.service';
 import { ToastrService } from 'ngx-toastr';
 import { HttpClient } from '@angular/common/http';
+import { AllIssue } from 'src/app/_models/AllIssue';
+import { Subscription } from 'rxjs';
 import { DataTablesResponse } from 'src/app/_models/DataTablesResponse';
 import { environment } from 'src/environments/environment';
-import { AuthenticationService } from 'src/app/_services/authentication.service';
-import { IssuePostedByUser } from 'src/app/_models/IssuePostedByUser';
-import { Subscription } from 'rxjs';
+
 
 @Component({
-  selector: 'app-my-list',
-  templateUrl: './my-list.component.html',
-  styleUrls: ['./my-list.component.css']
+  selector: 'app-search',
+  templateUrl: './search.component.html',
+  styleUrls: ['./search.component.css']
 })
-export class MyListComponent implements OnInit, OnDestroy {
+export class SearchComponent implements OnInit, OnDestroy {
+
+  constructor(private toastr: ToastrService, private http: HttpClient, private authService: AuthenticationService) { }
 
   dtOptions: DataTables.Settings = {};
   //persons: Person[];
-  issues: IssuePostedByUser[];
+  issues: AllIssue[];
+  currentUserSubscription: Subscription;
   currentUser: any;
-  currentUserSubscription :Subscription 
-  constructor(private toastr: ToastrService, private http: HttpClient, private authService: AuthenticationService) { }
-
   ngOnInit() {
     this.currentUserSubscription = this.authService.currentUser.subscribe(user => {
       console.log('user')
       console.log(user)
       this.currentUser = user;
     });
+
+    this.fillDataTable();
+  }
+  ngOnDestroy() {
+    // unsubscribe to ensure no memory leaks
+    this.currentUserSubscription.unsubscribe();
+  }
+  fillDataTable = () => {
+
     const that = this;
     this.dtOptions = {
       pagingType: 'full_numbers',
@@ -39,9 +49,10 @@ export class MyListComponent implements OnInit, OnDestroy {
       ajax: (dataTablesParameters: any, callback) => {
         that.http
           .post<DataTablesResponse>(
-            `${environment.baseUrl}api/v1/issues/get/createdby/${this.currentUser.userDetails._id}?authToken=${this.currentUser.authToken}`,
+            `${environment.baseUrl}api/v1/issues/get/all?authToken=${this.currentUser.authToken}`,
             dataTablesParameters, {}
           ).subscribe(resp => {
+            console.log(resp.data)
             that.issues = resp.data;
             callback({
               recordsTotal: resp.recordsTotal,
@@ -50,15 +61,13 @@ export class MyListComponent implements OnInit, OnDestroy {
             });
           });
       },
-      columns: [{ data: 'title', width: '40%' }, { data: 'createdOn', width: '30%' }, 
+      columns: [{ data: 'title', width: '30%' }, { data: 'createdOn', width: '30%' }, 
       { data: 'status', width: '10%' },
-      { data: 'assignedTo', width: '20%', orderable: false },
+      { data: 'createdBy', width: '15%', orderable: false },
+      { data: 'assignedTo', width: '15%', orderable: false },
       { data: 'issueId', orderable: false }, { data: '', orderable: false }]
     };
-  }
+  };//end of fillDataTable function
 
-  ngOnDestroy() {
-    // unsubscribe to ensure no memory leaks
-    this.currentUserSubscription.unsubscribe();
-  }
+
 }

@@ -9,14 +9,14 @@ const auth = require('./../middlewares/auth')
 const multer = require('multer');
 
 var storage = multer.diskStorage({
-        destination: function(req, file, cb) {
-            cb(null, './uploads/')
-        },
-        filename: function(req, file, cb) {
-            cb(null, Date.now() + '-' + file.originalname)
-        }
-    })
-    //const auth = require('../middlewares/auth');
+    destination: function (req, file, cb) {
+        cb(null, './uploads/')
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + '-' + file.originalname)
+    }
+})
+//const auth = require('../middlewares/auth');
 
 var upload = multer({
     storage: storage
@@ -89,19 +89,14 @@ module.exports.setRouter = (app) => {
         }
     */
     // params: email, password.
-    app.post(`${baseUrl}/get/reportedBy/:assignedTo`, issueController.getIssuesReporterWise);
-    //get all users
+    app.post(`${baseUrl}/get/reportedBy/:assignedTo`, auth.isAuthorized, issueController.getIssuesReporterWise);
+    //get all issues
+    app.post(`${baseUrl}/get/all`, auth.isAuthorized, issueController.getAllIssue);
+
+
     app.get(`${baseUrl}/view/:issueId`, auth.isAuthorized, issueController.viewByIssueId);
 
-    // app.post(`${baseUrl}/create/:issueId/upload`, (req, res, next) => {
-    //     upload(req, res, next, function(err) {
-    //         console.log('\n\n\n\n\n\n\n\nInside upload function')
-    //         if (err) {
-    //             return res.end(err.toString());
-    //         }
-    //         res.end('Done')
-    //     })
-    // }, issueController.uploadPhoto);
+    app.post(`${baseUrl}/get/createdby/:createdBy`, auth.isAuthorized, issueController.getAllIssuePostedByUser);
 
     app.post(`${baseUrl}/create/:issueId/upload`, upload.single('photo'), auth.isAuthorized, issueController.uploadPhoto);
     //delete photo

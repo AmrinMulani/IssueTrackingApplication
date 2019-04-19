@@ -46,7 +46,7 @@ export class DashboardComponent implements OnInit {
       ajax: (dataTablesParameters: any, callback) => {
         that.http
           .post<DataTablesResponse>(
-            `${environment.baseUrl}api/v1/issues/get/reportedBy/${this.currentUser.userDetails._id}`,
+            `${environment.baseUrl}api/v1/issues/get/reportedBy/${this.currentUser.userDetails._id}?authToken=${this.currentUser.authToken}`,
             dataTablesParameters, {}
           ).subscribe(resp => {
             that.issues = resp.data;
@@ -57,18 +57,9 @@ export class DashboardComponent implements OnInit {
             });
           });
       },
-      rowCallback: (row: Node, data: any[] | Object, index: number) => {
-        alert('clicked')
-        const self = this;
-        console.log('inside')
-        // Unbind first in order to avoid any duplicate handler
-        $('td', row).unbind('click');
-        $('td', row).bind('click', () => {
-          self.someClickHandler(data);
-        });
-        return row;
-      },
-      columns: [{ data: 'title', width:'40%' }, { data: 'createdBy', width:'20%', orderable: false }, { data: 'createdOn', width:'30%' }, { data: 'status', width:'10%' },{ data: 'issueId', width:'10%' },  { data: '' }]
+      columns: [{ data: 'title', width:'40%' },{ data: 'createdOn', width:'30%' }, { data: 'status', width:'10%' },
+      { data: 'createdBy', width:'20%', orderable: false }, 
+      { data: 'issueId', width:'10%', orderable: false },  { data: '', orderable: false }]
 
     };
   }

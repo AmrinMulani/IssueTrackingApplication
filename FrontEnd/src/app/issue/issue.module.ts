@@ -13,11 +13,13 @@ import { ViewComponent } from './view/view.component';
 import { ModalModule } from 'ngx-bootstrap';
 import { FileUploadModule } from 'ng2-file-upload';
 import { EditorModule } from '@tinymce/tinymce-angular';
+import { RouterModule } from '@angular/router';
+import { SearchComponent } from './search/search.component';
 
 @NgModule({
-  declarations: [CreateComponent, MyListComponent, ViewComponent],
+  declarations: [CreateComponent, MyListComponent, ViewComponent, SearchComponent],
   imports: [LayoutModule, DataTablesModule, ModalModule.forRoot(), FileUploadModule,
-    CommonModule, FormsModule, EditorModule,
+    CommonModule, FormsModule, EditorModule, RouterModule,
     //FroalaEditorModule.forRoot(), FroalaViewModule.forRoot(),
     NgxSpinnerModule
   ]

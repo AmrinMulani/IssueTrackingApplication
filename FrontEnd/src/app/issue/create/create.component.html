@@ -7,7 +7,10 @@
         <form #createForm="ngForm" id="createForm" (ngSubmit)="saveData()">
             <div class="form-group">
                 <label for="title">Title</label>
-                <input type="text" name="title" [(ngModel)]="issue.title" #title="ngModel" [ngClass]="title.valid && (title.dirty || title.touched) ? 'is-valid' : 'is-invalid'" required class="form-control" id="title" placeholder="Enter title of the issue">
+                <input type="text" name="title" [(ngModel)]="issue.title"
+                 #title="ngModel"
+                  [ngClass]="title.valid && (title.dirty || title.touched) ? 'is-valid' : 'is-invalid'"
+                   required class="form-control text-capitalize" id="title" placeholder="Enter title of the issue">
             </div>
             <div class="form-group">
                 <label for="description">Description</label>

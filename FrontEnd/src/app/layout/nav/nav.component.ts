@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Sanitizer } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 
 import { AuthenticationService } from 'src/app/_services/authentication.service';
 import { ToastrService } from 'ngx-toastr';
@@ -7,7 +7,6 @@ import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { environment } from 'src/environments/environment';
 import { SocketService } from 'src/app/_services/socket.service';
-import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-nav',

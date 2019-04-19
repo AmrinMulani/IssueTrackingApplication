@@ -7,6 +7,7 @@ import { AuthGuard } from './_guards/auth.guard';
 import { CreateComponent } from './issue/create/create.component';
 import { MyListComponent } from './issue/my-list/my-list.component';
 import { ViewComponent } from './issue/view/view.component';
+import { SearchComponent } from './issue/search/search.component';
 
 const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -24,6 +25,9 @@ const routes: Routes = [
       },
       {
         path: 'my-list', component: MyListComponent
+      },
+      {
+        path: 'search', component: SearchComponent
       },
       {
         path: 'view/:issueId', component: ViewComponent

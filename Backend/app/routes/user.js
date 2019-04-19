@@ -95,7 +95,6 @@ module.exports.setRouter = (app) => {
     app.get(`${baseUrl}/get`, userController.getAllUsers);
 
     app.post(`${baseUrl}/create`, upload.array('photos'), userController.createIssue);
-    app.post(`${baseUrl}/get/all`, upload.array('photos'), userController.getAllReq);
 
 
     app.post(`${baseUrl}/register`, upload.single('photo'), userController.register);

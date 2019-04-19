@@ -6,6 +6,7 @@
                     <th>Title</th>
                     <th>Date</th>
                     <th>Status</th>
+                    <th>Created By</th>
                     <th>Assigned To</th>
                     <th class="d-none">Id</th>
                     <th>Action</th>
@@ -16,6 +17,7 @@
                     <td>{{ issue.title }}</td>
                     <td>{{ issue.createdOn | date:'medium' }}</td>
                     <td>{{ issue.status }}</td>
+                    <td>{{ issue.createdBy }}</td>
                     <td>{{ issue.assignedTo }}</td>
                     <td class="d-none">{{ issue.issueId }}</td>
                     <td><a class="text-primary"  [routerLink]="['/view',issue.issueId]" routerLinkActive="router-link-active">View</a></td>

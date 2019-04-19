@@ -431,7 +431,7 @@ let createIssueFunction = (req, res) => {
             //console.log(d);
             let issueData = new IssueModel({
                 issueId: shortid.generate(),
-                title: req.body.title.trim(),
+                title: titleCase(req.body.title.trim()),
                 description: req.body.description.trim(),
                 attachment: d,
                 assignedTo: req.body.assignee,
@@ -472,72 +472,6 @@ let createIssueFunction = (req, res) => {
         });
 }; //end of create issue function
 
-let getAllReq = (req, res) => {
-    //console.log(req.body);
-    let perPage = req.body.length;
-    let page = req.body.length * req.body.start;
-    // creating find query.
-
-    findQuery = {};
-    populate = { 'path': 'assignedTo' };
-    orderColumn = req.body.order[0].column;
-    dir = req.body.order[0].dir;
-
-    if (orderColumn === 0) {
-        orderColumn = 'title';
-    } else if (orderColumn === 1) {
-        sort = {}
-        populate = { 'path': 'assignedTo', 'select': 'name', 'sort': { 'name': dir } }
-    } else if (orderColumn === 2) {
-        orderColumn = 'createdOn';
-    } else if (orderColumn === 3) {
-        orderColumn = 'status'
-    }
-
-    //console.log('populate')
-    //console.log(populate)
-    if (orderColumn != 1) {
-        sort = {
-            [orderColumn]: dir
-        };
-    }
-    //console.log(sort);
-    if (!check.isEmpty(req.body.search.value)) {
-        findQuery = {
-            $or: [
-                { 'title': { '$regex': req.body.search.value, '$options': 'i' } },
-                { 'status': { '$regex': req.body.search.value, '$options': 'i' } }
-            ]
-        };
-    }
-
-    IssueModel.count(findQuery, (err, count) => {
-        IssueModel.find(findQuery)
-            .select('status title assignedTo createdOn')
-            .populate(populate)
-            .sort(sort)
-            .limit(perPage)
-            .skip(req.body.start)
-            .lean()
-            .exec((err, result) => {
-                if (!err) {
-                    dataa = [];
-                    result.forEach(element => {
-                        element.assignedTo = element.assignedTo.name;
-                    });
-                    let objToSend = {
-                        draw: 0,
-                        recordsTotal: count,
-                        recordsFiltered: count,
-                        data: result
-                    };
-                    //console.log(objToSend)
-                    res.status(200);
-                    res.send(objToSend);
-                }
-            })
-    })
-}; //end of getAllUserFunction
 let register = (req, res) => {
     //console.log('req.body')
     //console.log(req.body)
@@ -634,6 +568,5 @@ module.exports = {
     signInSocial: signInSocial,
     getAllUsers: getAllUsersFunction,
     createIssue: createIssueFunction,
-    getAllReq: getAllReq,
     register: register
 }
